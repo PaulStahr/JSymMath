@@ -6,14 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.activation.DataHandler;
-
 public class JniInterface {
     private static final String resourceFolder = "/resources/";
 
     public static final InputStream getResourceAsStream(String file)
     {
-        return DataHandler.class.getResourceAsStream(getResourceFolder().concat(file));
+        return JniInterface.class.getResourceAsStream(getResourceFolder().concat(file));
     }
 
     public static final String getResourceFolder(){
