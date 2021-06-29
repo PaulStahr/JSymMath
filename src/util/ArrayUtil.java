@@ -409,6 +409,15 @@ public class ArrayUtil {
 		}
 	}
 
+
+
+    public static void multAdd(float[] in, int iBegin, int iEnd, float[] out, int oBegin, float mult) {
+        for (; iBegin < iEnd; ++iBegin, ++oBegin)
+        {
+            out[oBegin] += mult * in[iBegin];
+        }
+    }
+
 	public static void multAdd(double[] in, int iBegin, int iEnd, double[] out, int oBegin, double mult) {
 		for (; iBegin < iEnd; ++iBegin, ++oBegin)
 		{

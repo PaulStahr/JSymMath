@@ -1120,6 +1120,17 @@ public class Geometry {
 		return;
     }
 
+
+    public static final double distanceQ(double[] data0, int data0begin, double[] data1, int data1begin, int count) {
+        double res = 0;
+        for (int i = 0; i < count; ++i)
+        {
+            final double diff = data0[data0begin + i] - data1[data1begin + i];
+            res += diff * diff;
+        }
+        return res;
+    }
+
 	public static final float distanceQ(float[] data0, int data0begin, float[] data1, int data1begin, int count) {
 		float res = 0;
 		for (int i = 0; i < count; ++i)

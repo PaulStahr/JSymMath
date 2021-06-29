@@ -622,70 +622,52 @@ public abstract class Calculate
     	return res;
     }
 
-    public static boolean toRREF(double[][] m) {
+    public static int toRREF(double[][] m) {
         if (m.length == 0)
-        	return true;
+        	return 0;
         final int rowCount = m.length, columnCount = m[0].length;
 
         for (int r = 0, lead = 0, i=0; r < rowCount && lead < columnCount; i=++r, lead++) {
             while (m[i][lead] == 0) {
                 if (++i == rowCount) {
                     if (++lead == columnCount)
-                        return true;
+                        return m.length;
                     i = r;
                 }
             }
             final double rowr[] = m[i], rowi[] = (m[i] = m[r]);
             m[r] = rowr;
 
-            if (rowr[lead] != 0){
-            	final double lv1 = 1/rowr[lead];
-                for (int j = 0; j < columnCount; j++)
-                    rowr[j] *= lv1;
-            }
-
+            if (rowr[lead] != 0){ArrayUtil.mult(rowr, 0, columnCount, 1/rowr[lead]);}
             for (int k = 0; k < rowCount; k++) {
-                if (k != r){
-	                final double rowk[] = m[k], lv = rowk[lead];
-	                for (int j = 0; j < columnCount; j++)
-	                    rowk[j] -= lv * rowi[j];
-                }
+                if (k != r){ArrayUtil.multAdd(rowr, 0, columnCount, m[k], 0, -m[k][lead]);}
             }
         }
-        return true;
+        return m.length;
     }
 
-    public static boolean toRREF(float[][] m) {
+    public static int toRREF(float[][] m) {
         if (m.length == 0)
-        	return true;
+        	return 0;
         final int rowCount = m.length, columnCount = m[0].length;
 
         for (int r = 0, lead = 0, i=0; r < rowCount && lead < columnCount; i=++r, lead++) {
             while (m[i][lead] == 0) {
                 if (++i == rowCount) {
                     if (++lead == columnCount)
-                        return true;
+                        return m.length;
                     i = r;
                 }
             }
             final float rowr[] = m[i], rowi[] = (m[i] = m[r]);
             m[r] = rowr;
 
-            if (rowr[lead] != 0){
-            	final double lv1 = 1/rowr[lead];
-                for (int j = 0; j < columnCount; j++)
-                    rowr[j] *= lv1;
-            }
-
+            if (rowr[lead] != 0){ArrayUtil.mult(rowr, 0, columnCount, 1/rowr[lead]);}
             for (int k = 0; k < rowCount; k++) {
-                if (k != r){
-	                final float rowk[] = m[k], lv = rowk[lead];
-	                for (int j = 0; j < columnCount; j++)
-	                    rowk[j] -= lv * rowi[j];
-                }
+                if (k != r){ArrayUtil.multAdd(rowr, 0, columnCount, m[k], 0, -m[k][lead]);}
             }
         }
-        return true;
+        return m.length;
     }
 
     public static int toRREF(double[] m, int numRows) {
@@ -702,7 +684,7 @@ public abstract class Calculate
             ArrayUtil.swap(m, i, r, columnCount);
             if (m[r + lead] != 0){ArrayUtil.mult(m, r, r + columnCount, 1./m[r + lead]);}
             for (int k = 0; k < m.length; k+=columnCount) {
-                if (k != r){ArrayUtil.multAdd(m, i, i + columnCount, m, k, -m[k + lead]);}
+                if (k != r){ArrayUtil.multAdd(m, r, r + columnCount, m, k, -m[k + lead]);}//i looks wrong here...
             }
         }
         return numRows;
