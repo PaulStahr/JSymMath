@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,10 +27,12 @@ import java.util.List;
 import maths.Operation;
 import maths.algorithm.OperationCalculate;
 import maths.data.ArrayOperation;
+import maths.data.RealDoubleOperation;
 import maths.data.RealLongOperation;
 import maths.data.StringId;
 import maths.functions.atomic.AdditionOperation;
 import maths.functions.atomic.DivisionOperation;
+import maths.functions.atomic.EqualsOperation;
 import maths.functions.atomic.HigherOperation;
 import maths.functions.atomic.LowerOperation;
 import maths.functions.atomic.MultiplicationOperation;
@@ -43,6 +45,7 @@ import maths.functions.hyperbolic.CosinusHyperbolicOperation;
 import maths.functions.hyperbolic.CosinusOperation;
 import maths.functions.hyperbolic.SinusHyperbolicOperation;
 import maths.functions.hyperbolic.SinusOperation;
+import maths.functions.hyperbolic.TangensHyperbolicOperation;
 import maths.functions.hyperbolic.TangensOperation;
 import maths.functions.interators.SumIteratorOperation;
 import maths.variable.UserVariableOperation;
@@ -51,13 +54,13 @@ import maths.variable.VariableAmount;
 
 public class DifferentiationOperation extends FunctionOperation {
 	public final Operation a, b;
-	
+
 	public DifferentiationOperation(Operation a, Operation b){
     	if ((this.a = a) == null || (this.b = b) == null)
     		throw new NullPointerException();
 	}
-	
-	
+
+
 	@Override
 	public Operation calculate(VariableAmount object, CalculationController control) {
 		return calculate(a.calculate(object, control), b.calculate(object, control), control);
@@ -72,7 +75,7 @@ public class DifferentiationOperation extends FunctionOperation {
 		}
 		return calculate(a, ((UserVariableOperation)b).nameId, control);
 	}
-	
+
 	private static final Operation calculate(final Operation a, final int nameId, final CalculationController control){
 		if (a.isArray())
 			return new ArrayOperation.ArrayCreator(a.size()){
@@ -105,15 +108,19 @@ public class DifferentiationOperation extends FunctionOperation {
 				if (a instanceof NegativeOperation)
 					return NegativeOperation.calculate(calculate(s0, nameId, control), control);
 				if (a instanceof AbsoluteOperation)
-					return MultiplicationOperation.calculate(SignOperation.calculate(s0), calculate(s0,nameId, control), control);			
+					return MultiplicationOperation.calculate(SignOperation.calculate(s0), calculate(s0,nameId, control), control);
 				if (a instanceof SinusHyperbolicOperation)
 					return MultiplicationOperation.calculate(CosinusHyperbolicOperation.calculate(s0), calculate(s0,nameId, control), control);
 				if (a instanceof CosinusHyperbolicOperation)
 					return MultiplicationOperation.calculate(SinusHyperbolicOperation.calculate(s0), calculate(s0,nameId, control), control);
+				if (a instanceof TangensHyperbolicOperation)
+				    return  DivisionOperation.calculate(RealLongOperation.POSITIVE_ONE, PowerOperation.calculate(CosinusHyperbolicOperation.calculate(s0), RealLongOperation.POSITIVE_TWO, control), control);
 				if (a instanceof LogarithmOperation)
 					return DivisionOperation.calculate(calculate(s0, nameId, control), s0, control);
 				if (a instanceof NormOperation)
 					return DivisionOperation.calculate(MultiplicationOperation.calculate(s0, calculate(s0, nameId, control), control), NormOperation.calculate(s0), control);
+				if (a instanceof SignOperation)
+				    return IfOperation.calculate(new EqualsOperation(s0, RealLongOperation.ZERO), RealDoubleOperation.NaN, RealLongOperation.ZERO);
 				break;
 			}case 2:{
 				final Operation s0 = a.get(0), s1 = a.get(1);
@@ -128,7 +135,7 @@ public class DifferentiationOperation extends FunctionOperation {
 				if (a instanceof PowerOperation){
 					if (s1.isComplexFloatingNumber())
 						return MultiplicationOperation.calculate(MultiplicationOperation.calculate(s1, PowerOperation.calculate(s0, SubtractionOperation.calculate(s1,RealLongOperation.POSITIVE_ONE, control), control), control), calculate(s0,nameId, control), control);
-					return MultiplicationOperation.calculate(calculate(MultiplicationOperation.calculate(s1, LogarithmOperation.calculate(s0), control), nameId, control), a, control);				
+					return MultiplicationOperation.calculate(calculate(MultiplicationOperation.calculate(s1, LogarithmOperation.calculate(s0), control), nameId, control), a, control);
 				}
 				if (a instanceof AdditionOperation)
 					return AdditionOperation.calculate(calculate(s0, nameId, control), calculate(s1, nameId, control), control);
@@ -139,7 +146,7 @@ public class DifferentiationOperation extends FunctionOperation {
 				if (a instanceof MinimumOperation)
 					return new IfOperation(LowerOperation.calculate(s0, s1), calculate(s0, nameId, control), calculate(s1, nameId, control));
 				//if (a instanceof DifferentiationOperation)
-					
+
 				break;
 			}case 3:{
 				final Operation s0 = a.get(0), s1 = a.get(1), s2 = a.get(2);
@@ -152,20 +159,20 @@ public class DifferentiationOperation extends FunctionOperation {
 		}
 		return new DifferentiationOperation(a,new UserVariableOperation(StringId.getStringAndId(nameId)));
 	}
-	
-	
+
+
 	@Override
 	public String getFunctionName() {
 		return "diff";
 	}
 
-	
+
 	@Override
 	public final int size() {
 		return 2;
 	}
 
-	
+
 	@Override
 	public final Operation get(int index) {
 		switch (index){
