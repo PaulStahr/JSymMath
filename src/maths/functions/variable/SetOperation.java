@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -37,7 +37,7 @@ import maths.variable.UserVariableOperation;
 import maths.variable.Variable;
 import maths.variable.VariableAmount;
 
-/** 
+/**
 * @author  Paul Stahr
 * @version 04.02.2012
 */
@@ -52,7 +52,7 @@ public final class SetOperation extends LinkingOperation
     	if ((this.a = a) == null || b == null)
     		throw new NullPointerException();
     	if (b instanceof ArrayIndexOperation){
-        	ArrayList<Operation> al = new ArrayList<Operation>();
+        	ArrayList<Operation> al = new ArrayList<>();
     		while (b instanceof ArrayIndexOperation){
     			al.add(((ArrayIndexOperation)b).index);
     			b = ((ArrayIndexOperation)b).array;
@@ -78,13 +78,13 @@ public final class SetOperation extends LinkingOperation
     	this(a, b, StringId.getStringAndId(name), indexes);
     }
 
-    
+
 	public SetOperation(Operation a, Operation b, StringIdObject name, Operation indexes[]) {
     	if ((this.a = a) == null || (this.b = b) == null)
     		throw new NullPointerException();
     	this.nameObject = name;
     	this.nameId = nameObject.id;
-    	this.indexes = indexes;		
+    	this.indexes = indexes;
 	}
 
 	@Override
@@ -121,13 +121,13 @@ public final class SetOperation extends LinkingOperation
         }
         return new SetOperation(a,b);
     }
-	
+
 	@Override
 	public final int size() {
 		return 2;
 	}
 
-	
+
 	@Override
 	public final Operation get(int index) {
 		switch (index){
@@ -136,20 +136,18 @@ public final class SetOperation extends LinkingOperation
 			default:throw new ArrayIndexOutOfBoundsException(index);
 		}
 	}
-    
-    
-	@Override
-	public final int getPriority(){
-        return 0;
-    }
 
-	
+
+	@Override
+	public final int getPriority(){return 1;}
+
+
 	@Override
 	public final char getChar() {
 		return Characters.SET;
 	}
-	
-	
+
+
 	@Override
 	public StringBuilder toString(Print type, StringBuilder stringBuilder) {
 		super.toString(type, stringBuilder);

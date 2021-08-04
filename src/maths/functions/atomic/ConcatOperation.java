@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,14 +26,14 @@ import java.util.List;
 
 import maths.Operation;
 import maths.algorithm.OperationCalculate;
-import maths.variable.VariableAmount;
 import maths.data.ArrayOperation;
 import maths.data.Characters;
 import maths.data.StringOperation;
 import maths.exception.ArrayIndexOutOfBoundsExceptionOperation;
+import maths.variable.VariableAmount;
 
 
-/** 
+/**
 * @author  Paul Stahr
 * @version 04.02.2012
 */
@@ -81,18 +81,18 @@ public final class ConcatOperation extends LinkingOperation
         return new ConcatOperation(a, b);
     }
 
-    
+
 	@Override
 	public final Operation calculate (VariableAmount object, CalculationController control){
         return calculate(a.calculate(object, control), b.calculate(object, control));
     }
 
-	
+
 	@Override
 	public final int size() {
 		return 2;
 	}
-	
+
 	@Override
 	public final Operation get(int index) {
 		switch (index){
@@ -101,12 +101,12 @@ public final class ConcatOperation extends LinkingOperation
 			default:throw new ArrayIndexOutOfBoundsException(index);
 		}
 	}
-	
+
 	@Override
 	public final int getPriority(){
-        return 4;
+        return 5;
     }
-	
+
 	@Override
 	public char getChar() {
 		return Characters.CONCAT;

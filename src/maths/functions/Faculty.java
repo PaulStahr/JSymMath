@@ -35,7 +35,7 @@ import maths.data.RealLongOperation;
 * @author  Paul Stahr
 * @version 04.02.2012
 */
-public final class Fakultaet extends Operation
+public final class Faculty extends Operation
 {
     private static final Operation fakCacheDouble[];
     private static final Operation fakCacheLong[];
@@ -61,7 +61,7 @@ public final class Fakultaet extends Operation
 	}
     public final Operation a;
 
-    public Fakultaet (Operation a){
+    public Faculty (Operation a){
     	if ((this.a = a) == null)
     		throw new NullPointerException();
     }
@@ -101,7 +101,7 @@ public final class Fakultaet extends Operation
 				}
         	}.getArray();
         }
-        return new Fakultaet(a);
+        return new Faculty(a);
     }
 
     

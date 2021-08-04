@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,7 +26,6 @@ import java.util.List;
 
 import maths.Operation;
 import maths.algorithm.OperationCalculate;
-import maths.variable.VariableAmount;
 import maths.data.ArrayOperation;
 import maths.data.BooleanOperation;
 import maths.data.Characters;
@@ -34,8 +33,9 @@ import maths.data.ComplexLongOperation;
 import maths.data.RealDoubleOperation;
 import maths.data.RealLongOperation;
 import maths.exception.ArrayIndexOutOfBoundsExceptionOperation;
+import maths.variable.VariableAmount;
 
-/** 
+/**
 * @author  Paul Stahr
 * @version 04.02.2012
 */
@@ -59,7 +59,7 @@ public class OrOperation extends LinkingOperation
         	if (a.size() != b.size())
         		return new ArrayIndexOutOfBoundsExceptionOperation();
            	return new ArrayOperation.ArrayCreator(a.size()){
-   				
+
    				@Override
 				public final Operation get(int index) {
    					return calculate(a.get(index), b.get(index));
@@ -68,7 +68,7 @@ public class OrOperation extends LinkingOperation
         }
         if (a.isArray() && (b.isBoolean() || b.isComplexIntegerNumber())){
         	return new ArrayOperation.ArrayCreator(a.size()){
-				
+
 				@Override
 				public final Operation get(int index) {
 					return calculate(a.get(index), b);
@@ -77,7 +77,7 @@ public class OrOperation extends LinkingOperation
         }
         if ((a.isBoolean() || a.isComplexIntegerNumber()) && b.isArray()){
         	return new ArrayOperation.ArrayCreator(b.size()){
-				
+
 				@Override
 				public final Operation get(int index) {
 					return calculate(a, b.get(index));
@@ -87,25 +87,25 @@ public class OrOperation extends LinkingOperation
         if (a.isPrimitive() && !a.isComplexIntegerNumber() && !a.isArray())
         	return RealDoubleOperation.NaN;
         if (b.isPrimitive() && !b.isComplexIntegerNumber() && !b.isArray())
-        	return RealDoubleOperation.NaN;       
+        	return RealDoubleOperation.NaN;
         Operation erg = OperationCalculate.standardCalculations(a, b);
         if (erg != null)
         	return erg;
         return new OrOperation(a, b);
     }
-    
-    
+
+
 	@Override
 	public Operation calculate (VariableAmount object, CalculationController control){
         return calculate (a.calculate(object, control), b.calculate(object, control));
     }
-	
+
 	@Override
 	public final int size() {
 		return 2;
 	}
 
-	
+
 	@Override
 	public final Operation get(int index) {
 		switch (index){
@@ -114,19 +114,17 @@ public class OrOperation extends LinkingOperation
 			default:throw new ArrayIndexOutOfBoundsException(index);
 		}
 	}
-    
-	@Override
-	public int getPriority(){
-        return 1;
-    }
 
-	
+	@Override
+	public final int getPriority(){return 2;}
+
+
 	@Override
 	public char getChar() {
 		return Characters.OR;
 	}
-	
-	
+
+
 	@Override
 	public Operation getInstance(List<Operation> subclasses) {
 		return new OrOperation(subclasses.get(0), subclasses.get(1));

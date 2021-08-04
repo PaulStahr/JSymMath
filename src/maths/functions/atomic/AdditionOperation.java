@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@ import maths.data.RealRationalOperation;
 import maths.exception.ArrayIndexOutOfBoundsExceptionOperation;
 import maths.variable.VariableAmount;
 
-/** 
+/**
 * @author  Paul Stahr
 * @version 04.02.2012
 */
@@ -108,7 +108,7 @@ public final class AdditionOperation extends LinkingOperation
         	if (a.size() != b.size())
         		return new ArrayIndexOutOfBoundsExceptionOperation();
         	return new ArrayOperation.ArrayCreator(a.size()){
-				
+
 				@Override
 				public final Operation get(int index) {
 					return calculate(a.get(index), b.get(index), control);
@@ -137,7 +137,7 @@ public final class AdditionOperation extends LinkingOperation
         			return MultiplicationOperation.calculate(calculate(a0, b0, control), b1, control);
         		}
         	}
-        	
+
         }
         final OperationCalculate.OperationList up = control.getOperationList(), down = control.getOperationList();
         OperationCalculate.fillWithAddUpAndDowns(a, up, down);
@@ -150,7 +150,7 @@ public final class AdditionOperation extends LinkingOperation
         }
         return new AdditionOperation(a, b);
     }
-    
+
     /*public static final Operation calculate(final Operation a, final Operation b, final CalculationController control){
     	int type = a.getTypeBitmask() & b.getTypeBitmask();
     	if ((type & BITMASK_INT_REAL) != 0){
@@ -208,7 +208,7 @@ public final class AdditionOperation extends LinkingOperation
         	if (a.subClassCount() != b.subClassCount())
         		return new ArrayIndexOutOfBoundsExceptionOperation();
         	return new ArrayOperation.ArrayCreator(a.subClassCount()){
-				
+
 				@Override
 				public final Operation get(int index) {
 					return calculate(a.get(index), b.get(index), control);
@@ -237,7 +237,7 @@ public final class AdditionOperation extends LinkingOperation
         			return MultiplicationOperation.calculate(calculate(a0, b0, control), b1, control);
         		}
         	}
-        	
+
         }
         final OperationCalculate.OperationList up = control.getOperationList(), down = control.getOperationList();
         OperationCalculate.fillWithAddUpAndDowns(a, up, down);
@@ -250,7 +250,7 @@ public final class AdditionOperation extends LinkingOperation
         }
         return new AdditionOperation(a, b);
     }*/
-    
+
     private static final Operation twoSideCalculate(final Operation a, final Operation b, final CalculationController control){
         if (a.isComplexFloatingNumber() && a.isZero())
             return b;
@@ -279,20 +279,20 @@ public final class AdditionOperation extends LinkingOperation
         	return SubtractionOperation.calculate(b, a.get(0), control);
     	return null;
     }
-    
-    
+
+
 	@Override
 	public final Operation calculate (final VariableAmount object, CalculationController control){
         return calculate(a.calculate(object, control), b.calculate(object, control), control);
     }
 
-	
+
 	@Override
 	public final int size() {
 		return 2;
 	}
 
-	
+
 	@Override
 	public final Operation get(int index) {
 		switch (index){
@@ -301,12 +301,12 @@ public final class AdditionOperation extends LinkingOperation
 			default:throw new ArrayIndexOutOfBoundsException(index);
 		}
 	}
-    
+
 	@Override
 	public final int getPriority(){
-        return 4;
+        return 5;
     }
-	
+
 	@Override
 	public char getChar() {
 		return Characters.ADD;

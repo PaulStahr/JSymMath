@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,7 +26,6 @@ import java.util.List;
 
 import maths.Operation;
 import maths.algorithm.OperationCalculate;
-import maths.variable.VariableAmount;
 import maths.data.Characters;
 import maths.data.RealLongOperation;
 import maths.exception.ArrayIndexOutOfBoundsExceptionOperation;
@@ -34,20 +33,21 @@ import maths.exception.IllegalArgumentExceptionOperation;
 import maths.functions.atomic.AdditionOperation;
 import maths.functions.atomic.LinkingOperation;
 import maths.functions.atomic.MultiplicationOperation;
+import maths.variable.VariableAmount;
 
-/** 
+/**
 * @author  Paul Stahr
 * @version 26.02.2012
 */
-public class SkalarProductOpertion extends LinkingOperation {
+public class ScalarProductOpertion extends LinkingOperation {
 	public final Operation a,b;
-	
-	public SkalarProductOpertion(Operation a, Operation b){
+
+	public ScalarProductOpertion(Operation a, Operation b){
     	if ((this.a = a) == null || (this.b = b) == null)
     		throw new NullPointerException();
     }
-	
-	
+
+
 	@Override
 	public Operation calculate(VariableAmount object, CalculationController control) {
 		return calculate(a.calculate(object, control), b.calculate(object, control), control);
@@ -64,7 +64,7 @@ public class SkalarProductOpertion extends LinkingOperation {
 				Operation tmp0 = a.get(i), tmp1 = b.get(i);
 				if (tmp0.isComplexFloatingNumber() && tmp1.isComplexFloatingNumber())
 				{
-					res = AdditionOperation.calculate(res, MultiplicationOperation.calculate(tmp0, tmp1, control), control);					
+					res = AdditionOperation.calculate(res, MultiplicationOperation.calculate(tmp0, tmp1, control), control);
 				}
 				else
 				{
@@ -80,16 +80,16 @@ public class SkalarProductOpertion extends LinkingOperation {
 		Operation erg = OperationCalculate.standardCalculations(a, b);
 		if (erg != null)
 			return erg;
-		return new SkalarProductOpertion(a, b);
+		return new ScalarProductOpertion(a, b);
 	}
 
-	
+
 	@Override
 	public final int size() {
 		return 2;
 	}
 
-	
+
 	@Override
 	public final Operation get(int index) {
 		switch (index){
@@ -97,16 +97,19 @@ public class SkalarProductOpertion extends LinkingOperation {
 			case 1: return b;
 			default:throw new ArrayIndexOutOfBoundsException(index);
 		}
-	}    
+	}
 
-	
+
 	@Override
 	public char getChar() {
 		return Characters.MULT_SKAL;
 	}
-	
+
+	@Override
+    public final int getPriority() {return 6;}
+
 	@Override
 	public Operation getInstance(List<Operation> subclasses) {
-		return new SkalarProductOpertion(subclasses.get(0), subclasses.get(1));
+		return new ScalarProductOpertion(subclasses.get(0), subclasses.get(1));
 	}
 }

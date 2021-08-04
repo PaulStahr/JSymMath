@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,7 +25,6 @@ package maths.functions.atomic;
 import java.util.List;
 
 import maths.Operation;
-import maths.variable.VariableAmount;
 import maths.algorithm.Calculate;
 import maths.algorithm.OperationCalculate;
 import maths.data.ArrayOperation;
@@ -36,8 +35,9 @@ import maths.data.RealDoubleOperation;
 import maths.data.RealLongOperation;
 import maths.data.RealRationalOperation;
 import maths.exception.ArrayIndexOutOfBoundsExceptionOperation;
+import maths.variable.VariableAmount;
 
-/** 
+/**
 * @author  Paul Stahr
 * @version 04.02.2012
 */
@@ -93,7 +93,7 @@ public class MultiplicationOperation extends LinkingOperation
 		              	}
 	            	}
               	}
-            }                  		
+            }
             return ComplexDoubleOperation.get((double) ar * br - (double)ai * bi,(double) ar * bi + (double)ai * br);
         }
         if (a.isComplexFloatingNumber() && b.isComplexFloatingNumber()){
@@ -111,14 +111,14 @@ public class MultiplicationOperation extends LinkingOperation
            	}.getArray();
         }
         Operation erg;
-        
+
         if ((erg = twoSideCalculate(a, b, control)) != null || (erg = twoSideCalculate(b, a, control)) != null || (erg = OperationCalculate.standardCalculations(a, b))!=null)
         	return erg;
         if (a instanceof PowerOperation && b instanceof PowerOperation && a.get(0).equals(b.get(0)))
-            return PowerOperation.getInstance(a.get(0), AdditionOperation.calculate(a.get(1), b.get(1), control));        		
+            return PowerOperation.getInstance(a.get(0), AdditionOperation.calculate(a.get(1), b.get(1), control));
         if (a.equals(b))
         	return PowerOperation.calculate(a, RealLongOperation.POSITIVE_TWO, control);
-        
+
         final OperationCalculate.OperationList up = control.getOperationList(), down = control.getOperationList();
         OperationCalculate.fillWithMultUpAndDowns(a, up, down);
         OperationCalculate.fillWithMultUpAndDowns(b, up, down);
@@ -131,18 +131,18 @@ public class MultiplicationOperation extends LinkingOperation
         return new MultiplicationOperation(a, b);
     }
 
-    
+
 	@Override
 	public Operation calculate (VariableAmount object, CalculationController control){
         return calculate(a.calculate(object, control), b.calculate(object, control), control);
     }
-	
+
 	@Override
 	public final int size() {
 		return 2;
 	}
 
-	
+
 	@Override
 	public final Operation get(int index) {
 		switch (index){
@@ -150,7 +150,7 @@ public class MultiplicationOperation extends LinkingOperation
 			case 1: return b;
 			default:throw new ArrayIndexOutOfBoundsException(index);
 		}
-	}    
+	}
     private static final Operation twoSideCalculate(final Operation a, final Operation b, final CalculationController control){
         if (a.isArray() && b.isComplexFloatingNumber()){
         	return new ArrayOperation.ArrayCreator(a.size()){
@@ -174,13 +174,13 @@ public class MultiplicationOperation extends LinkingOperation
         	return PowerOperation.getInstance(a, AdditionOperation.calculate(RealLongOperation.POSITIVE_ONE, b.get(1), control));
         return null;
     }
-    
-    
+
+
 	@Override
 	public final StringBuilder toString (Print type, StringBuilder stringBuilder){
     	switch (type){
     		case CALGRAPH:{
-    	        return super.toString(type, stringBuilder);	
+    	        return super.toString(type, stringBuilder);
     		}case LATEX:{
     	        if (a.getPriority()<getPriority())
     	        	a.toString(type, stringBuilder.append('(')).append(')');
@@ -191,7 +191,7 @@ public class MultiplicationOperation extends LinkingOperation
     	        	b.toString(type, stringBuilder.append('(')).append(')');
     	        else
     	        	b.toString(type, stringBuilder);
-    	        return stringBuilder;      			    			
+    	        return stringBuilder;
     		}case OPEN_OFFICE:{
     	        if (a.getPriority()<getPriority())
     	        	a.toString(type, stringBuilder.append('(')).append(')');
@@ -202,24 +202,22 @@ public class MultiplicationOperation extends LinkingOperation
     	        	b.toString(type, stringBuilder.append('(')).append(')');
     	        else
     	        	b.toString(type, stringBuilder);
-    	        return stringBuilder;      			    			   			
+    	        return stringBuilder;
     		}default: throw new IllegalArgumentException();
     	}
     }
 
-    
-	@Override
-	public final int getPriority(){
-        return 5;
-    }
 
-	
+	@Override
+	public final int getPriority(){return 6;}
+
+
 	@Override
 	public char getChar() {
 		return Characters.MULT;
 	}
-	
-	
+
+
 	@Override
 	public Operation getInstance(List<Operation> subclasses) {
 		return new MultiplicationOperation(subclasses.get(0), subclasses.get(1));

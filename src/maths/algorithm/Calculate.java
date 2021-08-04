@@ -635,7 +635,8 @@ public abstract class Calculate
                     i = r;
                 }
             }
-            final double rowr[] = m[i], rowi[] = (m[i] = m[r]);
+            final double rowr[] = m[i];
+            m[i] = m[r];
             m[r] = rowr;
 
             if (rowr[lead] != 0){ArrayUtil.mult(rowr, 0, columnCount, 1/rowr[lead]);}
@@ -659,7 +660,8 @@ public abstract class Calculate
                     i = r;
                 }
             }
-            final float rowr[] = m[i], rowi[] = (m[i] = m[r]);
+            final float rowr[] = m[i];
+            m[i] = m[r];
             m[r] = rowr;
 
             if (rowr[lead] != 0){ArrayUtil.mult(rowr, 0, columnCount, 1/rowr[lead]);}
@@ -684,7 +686,7 @@ public abstract class Calculate
             ArrayUtil.swap(m, i, r, columnCount);
             if (m[r + lead] != 0){ArrayUtil.mult(m, r, r + columnCount, 1./m[r + lead]);}
             for (int k = 0; k < m.length; k+=columnCount) {
-                if (k != r){ArrayUtil.multAdd(m, r, r + columnCount, m, k, -m[k + lead]);}//i looks wrong here...
+                if (k != r){ArrayUtil.multAdd(m, r, r + columnCount, m, k, -m[k + lead]);}
             }
         }
         return numRows;
@@ -760,13 +762,9 @@ public abstract class Calculate
     	return erg;
     }
 
-    public static final double abs(double x){
-        return x > 0 ? x : -x;
-    }
+    public static final double abs(double x){return x > 0 ? x : -x;}
 
-    public static final long abs(long x){
-        return x > 0 ? x : -x;
-    }
+    public static final long abs(long x){return x > 0 ? x : -x;}
 
     public static final long[] primeFactors(long n){
     	long erg[] = new long[1];
@@ -883,7 +881,6 @@ public abstract class Calculate
 			lowerBound[index] = low;
 			upperBound[index] = up;
 		}
-
 
 		@Override
 		public int size()
@@ -1055,7 +1052,7 @@ public abstract class Calculate
 				max = arg;
 			}
 		}
-		return min;
+		return (min + max) * 0.5;
 	}
 
 	public static final int propabilityRound(double density)
@@ -1088,8 +1085,6 @@ public abstract class Calculate
 		return val < low ? low : val > high ? high : val;
 	}
 
-	public static final int signum(double d) {
-		return d > 0 ? 1 : d < 0 ? -1 : 0;
-	}
+	public static final int signum(double d) {return d > 0 ? 1 : d < 0 ? -1 : 0;}
 
 }

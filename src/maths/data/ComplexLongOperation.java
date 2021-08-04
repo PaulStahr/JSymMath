@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,13 +30,13 @@ import maths.variable.VariableAmount;
 
 public class ComplexLongOperation extends Operation{
 	public static final ComplexLongOperation POSITIVE_ONE_I = new ComplexLongOperation(0,1);
-	
+
 	public final long real, imag;
-	
+
 	public static final Operation get(final long real, final long imaginary){
 		return imaginary == 0 ? new RealLongOperation(real) : new ComplexLongOperation(real, imaginary);
 	}
-	
+
     private ComplexLongOperation (long real, long imaginary){
         this.real = real;
         this.imag = imaginary;
@@ -48,84 +48,88 @@ public class ComplexLongOperation extends Operation{
     	this.real = Long.parseLong (real);
     	this.imag = Long.parseLong(imaginary);
     }
- 
+
     @Override
 	public int getTypeBitmask(){
 		return BITMASK_INT_COMPLEX | BITMASK_RATIONAL_COMPLEX | BITMASK_FLOAT_COMPLEX;
 	}
-    
+
 	@Override
 	public final boolean isComplexFloatingNumber(){
 		return true;
 	}
-	
+
 	@Override
 	public final boolean isComplexRationalNumber(){
 		return true;
 	}
-	
+
 	@Override
 	public final boolean isComplexIntegerNumber(){
 		return true;
 	}
-	
+
 	@Override
 	public final double doubleValue(){
         return real;
     }
 
-    
+
 	@Override
 	public final long longValue(){
         return real;
     }
 
-    
+
 	@Override
 	public final double doubleValueImag(){
         return imag;
     }
 
-    
+
 	@Override
 	public final long longValueImag(){
         return imag;
     }
 
+    @Override
     public long longNumeratorValue(){
         return real;
     }
 
+    @Override
     public long longDenumeratorValue(){
         return 1;
     }
-    
+
+    @Override
     public long longNumeratorValueImag(){
         return imag;
     }
 
+    @Override
     public long longDenumeratorValueImag(){
         return 1;
     }
-    
+
 	@Override
 	public final Operation calculate (final VariableAmount object, CalculationController control){
         return this;
-    }    
+    }
 
-	
+
 	@Override
 	public final int size() {
 		return 0;
 	}
 
-	
+
 	@Override
 	public final Operation get(int index) {
 		throw new ArrayIndexOutOfBoundsException(index);
 	}
-    
-    
+
+
 	@Override
 	public final StringBuilder toString(Print type, StringBuilder stringBuilder){
     	if (real == 0 && imag == 0)
@@ -143,23 +147,24 @@ public class ComplexLongOperation extends Operation{
     		stringBuilder.append(imag).append(Characters.MULT).append(Characters.I);
     	return stringBuilder;
      }
-    
-    
+
+
 	@Override
 	public String toString(){
     	return Long.toString(real);
     }
-    
-	
+
+
 	@Override
 	public Operation getNegative() {
 		return new ComplexLongOperation(-real, -imag);
 	}
 
-	public Operation getInvers(){
+	@Override
+    public Operation getInvers(){
     	if (real < -Integer.MAX_VALUE || real > Integer.MAX_VALUE || imag < -Integer.MAX_VALUE || imag> Integer.MAX_VALUE){
         	final double mult = 1/((double)real*real+(double)imag*imag);
-        	return ComplexDoubleOperation.get(real*mult, -imag*mult);	        		
+        	return ComplexDoubleOperation.get(real*mult, -imag*mult);
     	}
     	final long qa = real*real, qi = imag*imag;
     	long divisor = qa+qi;
@@ -168,39 +173,39 @@ public class ComplexLongOperation extends Operation{
 		final double mult = 1/((double)qa+qi);
 		return ComplexDoubleOperation.get(real*mult, -imag*mult);
 	}
-	
+
 	@Override
 	public final boolean isZero() {
 		return real==0 && imag == 0;
 	}
 
-	
+
 	@Override
 	public final boolean isNaN() {
 		return false;
 	}
-	
+
 	@Override
 	public final boolean isIntegral(){
 		return true;
 	}
-	
+
 	@Override
 	public final boolean isPositive(){
 		return real > 0;
 	}
-	
-    
+
+
 	@Override
 	public final boolean isPrimitive(){
         return true;
     }
-	
+
 	@Override
 	public final int getPriority(){
-        return 4;
+        return 5;
     }
-	
+
 	@Override
 	public boolean equals(Object obj){
 		if (!(obj instanceof Operation))
@@ -216,7 +221,7 @@ public class ComplexLongOperation extends Operation{
 			return op.doubleValue() == real && op.doubleValueImag() == imag;
 		return false;
 	}
-	
+
 	@Override
 	public Operation getInstance(List<Operation> subclasses) {
 		return this;

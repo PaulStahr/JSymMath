@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,40 +26,46 @@ import java.util.Comparator;
 import java.util.List;
 
 import maths.Operation;
-import maths.variable.VariableAmount;
 import maths.data.ArrayOperation;
 import maths.data.BooleanOperation;
 import maths.data.RealDoubleOperation;
 import maths.functions.atomic.HigherOperation;
+import maths.variable.VariableAmount;
 
 public class SortOperation extends FunctionOperation {
 	public final Operation a;
 	private static final Comparator<Operation> operationComperator = new Comparator<Operation>() {
-		
+
 		@Override
 		public int compare(Operation arg0, Operation arg1) {
-			Operation erg = HigherOperation.calculate(arg0, arg1);
-			return erg == BooleanOperation.TRUE ? 1 : erg == BooleanOperation.FALSE ? -1 : 0;
+			Operation res = HigherOperation.calculate(arg0, arg1);
+			return res == BooleanOperation.TRUE ? 1 : res == BooleanOperation.FALSE ? -1 : 0;
 		}
 	};
-	
+
 	public SortOperation(Operation a){
     	if ((this.a = a) == null)
     		throw new NullPointerException();
 	}
-	
+
 	public static final Operation calculate(Operation a){
 		if (!(a.isArray()) || !((ArrayOperation)a).isPrimitive())
 			return new SortOperation(a);
 		final Operation data[] = ((ArrayOperation)a).toArray();
-		for (Operation op:data)
+		int containsType = 0;
+		for (Operation op:data) {
 			if (!(op.isRealFloatingNumber()))
+			    containsType |= 1;
+		    if (!(op.isString()))
+		        containsType |= 2;
+		    if (containsType == 3)
 				return RealDoubleOperation.NaN;
+		}
 		Arrays.sort(data, operationComperator);
 		return ArrayOperation.getInstance(data);
 	}
-	
-	
+
+
 	@Override
 	public Operation calculate(VariableAmount object, CalculationController control) {
 		return calculate(a.calculate(object, control));
@@ -70,7 +76,7 @@ public class SortOperation extends FunctionOperation {
 		return 1;
 	}
 
-	
+
 	@Override
 	public final Operation get(int index) {
 		switch (index){
@@ -79,12 +85,12 @@ public class SortOperation extends FunctionOperation {
 		}
 	}
 
-	
+
 	@Override
 	public String getFunctionName() {
 		return "sort";
 	}
-	
+
 	@Override
 	public Operation getInstance(List<Operation> subclasses) {
 		return new SortOperation(subclasses.get(0));

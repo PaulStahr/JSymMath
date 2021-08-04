@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,7 +25,6 @@ package maths.functions.atomic;
 import java.util.List;
 
 import maths.Operation;
-import maths.variable.VariableAmount;
 import maths.algorithm.Calculate;
 import maths.algorithm.OperationCalculate;
 import maths.data.ArrayOperation;
@@ -37,6 +36,7 @@ import maths.data.RealLongOperation;
 import maths.data.RealRationalOperation;
 import maths.exception.ArrayIndexOutOfBoundsExceptionOperation;
 import maths.functions.AbsoluteOperation;
+import maths.variable.VariableAmount;
 
 /**
  * is raising the first argument to the power of the second
@@ -52,7 +52,7 @@ public class PowerOperation extends LinkingOperation
     	if ((this.a = a) == null || (this.b = b) == null)
     		throw new NullPointerException();
     }
-    
+
     public static final PowerOperation getInstance(Operation a, Operation b){
     	if (a== null || b == null)
     		throw new NullPointerException();
@@ -79,7 +79,7 @@ public class PowerOperation extends LinkingOperation
     			if (numerator == -1)
         			return new InversOperation(a);
     			if (numerator == 2)
-        			return new SquareOperation(a);    		
+        			return new SquareOperation(a);
     		}
     	}else if (b.isRealFloatingNumber()){
     		final double dvalue = b.doubleValue();
@@ -94,7 +94,7 @@ public class PowerOperation extends LinkingOperation
     	}
     	return new PowerOperation(a, b);
     }
-    
+
     public static final Operation calculate (final Operation a, final Operation b, final CalculationController control){
     	if (a.isRealIntegerNumber() && b.isRealIntegerNumber()){
     		return pow(a.longValue(), b.longValue());
@@ -154,14 +154,14 @@ public class PowerOperation extends LinkingOperation
         	final double same_outer_part = Math.exp(pytl * br - tan_sign * bi);
         	return ComplexDoubleOperation.get(Math.cos(same_inner_part)*same_outer_part, Math.sin(same_inner_part)*same_outer_part);
         }
-        
+
         if (b.isRealFloatingNumber()){
             if (b.doubleValue() == 1)
                 return a;
             if (b.doubleValue() == 0)
             	return RealLongOperation.POSITIVE_ONE;
             if (b.doubleValue()%2==0 && a instanceof NegativeOperation)
-            	return PowerOperation.getInstance(a.get(0), b);            
+            	return PowerOperation.getInstance(a.get(0), b);
             if (a instanceof PowerOperation && a.get(1).isComplexFloatingNumber())
             	return PowerOperation.getInstance(a.get(0), MultiplicationOperation.calculate(b,a.get(1), control));
         }
@@ -169,7 +169,7 @@ public class PowerOperation extends LinkingOperation
         	if (a.size() != b.size())
         		return new ArrayIndexOutOfBoundsExceptionOperation();
            	return new ArrayOperation.ArrayCreator(a.size()){
-   				
+
    				@Override
 				public final Operation get(int index) {
    					return calculate(a.get(index), b.get(index), control);
@@ -178,7 +178,7 @@ public class PowerOperation extends LinkingOperation
         }
         if (a.isArray() && b.isComplexFloatingNumber()){
         	return new ArrayOperation.ArrayCreator(a.size()){
-				
+
 				@Override
 				public final Operation get(int index) {
 					return calculate(a.get(index), b, control);
@@ -187,7 +187,7 @@ public class PowerOperation extends LinkingOperation
         }
         if (a.isComplexFloatingNumber() && b.isArray()){
         	return new ArrayOperation.ArrayCreator(b.size()){
-				
+
 				@Override
 				public final Operation get(int index) {
 					return calculate(a, b.get(index), control);
@@ -238,14 +238,14 @@ public class PowerOperation extends LinkingOperation
     	do
     		ergd*=(exp&stelle)==0 ? ergd : ergd*x;
     	while ((stelle>>=1)!=0);
-    	return new RealDoubleOperation(ergd);    	
+    	return new RealDoubleOperation(ergd);
     }
-    
+
 	@Override
 	public Operation calculate (VariableAmount object, CalculationController control){
-        return calculate (a.calculate(object, control), b.calculate(object, control), control);  
+        return calculate (a.calculate(object, control), b.calculate(object, control), control);
     }
-   
+
 	@Override
 	public StringBuilder toString(final Print type, StringBuilder stringBuilder){
     	switch(type){
@@ -254,22 +254,22 @@ public class PowerOperation extends LinkingOperation
     	        if (b.isRealIntegerNumber())
     	        	return stringBuilder.append(Characters.toHighString(String.valueOf(b.longValue())));
     	        stringBuilder.append(Characters.POW);
-    	        return toString(stringBuilder, b, b.getPriority()<=getPriority(), type);     			
+    	        return toString(stringBuilder, b, b.getPriority()<=getPriority(), type);
     		}case LATEX:
     		case OPEN_OFFICE:{
-    			return b.toString(type, a.toString(type, stringBuilder).append('^').append('{')).append('}');    			
+    			return b.toString(type, a.toString(type, stringBuilder).append('^').append('{')).append('}');
     		}default:
     			throw new IllegalArgumentException();
     	}
     }
 
-	
+
 	@Override
 	public final int size() {
 		return 2;
 	}
 
-	
+
 	@Override
 	public final Operation get(int index) {
 		switch (index){
@@ -277,43 +277,41 @@ public class PowerOperation extends LinkingOperation
 			case 1: return b;
 			default:throw new ArrayIndexOutOfBoundsException(index);
 		}
-	}    
-    
-	@Override
-	public int getPriority(){
-        return 6;
-    }
+	}
 
-    
+	@Override
+	public final int getPriority(){return 7;}
+
+
 	@Override
 	public boolean needClip(int subClass){
     	return get(subClass).getPriority() <= getPriority();
     }
-    
-	
+
+
 	@Override
 	public char getChar() {
 		return Characters.POW;
 	}
-	
+
 	public static final class InversOperation extends PowerOperation{
 		public InversOperation(Operation a){
 			super(a, RealLongOperation.NEGATIVE_ONE);
 		}
-		
-	    
+
+
 		@Override
 		public Operation calculate (VariableAmount object, CalculationController control){
-	        return calculate (a.calculate(object, control), null);  
+	        return calculate (a.calculate(object, control), null);
 	    }
-		
+
 	    public static final Operation calculate (Operation a, CalculationController control){
 	        if (a.isComplexFloatingNumber())
 	        	return a.getInvers();
-	    	return calculate (a, RealLongOperation.NEGATIVE_ONE, control);  
+	    	return calculate (a, RealLongOperation.NEGATIVE_ONE, control);
 	    }
 	}
-	
+
 	public static final class SquareRootOperation extends PowerOperation{
 		public SquareRootOperation (Operation a){
 			super(a, RealRationalOperation.POSITIVE_HALF);
@@ -325,7 +323,7 @@ public class PowerOperation extends LinkingOperation
 	    		if (val < 0){
 	        		final long erg = Calculate.sqrt(-val);
 	        		return erg == -1 ? ComplexDoubleOperation.get(0, Math.sqrt(-val)) : ComplexLongOperation.get(0, erg);
-	    		}   			
+	    		}
 	    		final long erg = Calculate.sqrt(val);
 	    		return erg == -1 ? new RealDoubleOperation(Math.sqrt(val)) : new RealLongOperation(erg);
 	    	}
@@ -333,10 +331,10 @@ public class PowerOperation extends LinkingOperation
 	    		final long numerator = a.longNumeratorValue(), denumerator = a.longDenumeratorValue();
 	    		if (numerator < 0){
 	    			final long sqrtnum = Calculate.sqrt(-numerator), sqrtde = Calculate.sqrt(denumerator);
-	    			return sqrtnum == -1 || sqrtde == -1 ? ComplexDoubleOperation.get(0, Math.sqrt(-(double)numerator/denumerator)) :ComplexLongOperation.get(0, sqrtnum/sqrtde); 
+	    			return sqrtnum == -1 || sqrtde == -1 ? ComplexDoubleOperation.get(0, Math.sqrt(-(double)numerator/denumerator)) :ComplexLongOperation.get(0, sqrtnum/sqrtde);
 	    		}
 				final long sqrtnum = Calculate.sqrt(numerator), sqrtde = Calculate.sqrt(denumerator);
-				return sqrtnum == -1 || sqrtde == -1 ? new RealDoubleOperation(Math.sqrt((double)numerator/denumerator)) :RealRationalOperation.getInstance(sqrtnum,sqrtde);     		
+				return sqrtnum == -1 || sqrtde == -1 ? new RealDoubleOperation(Math.sqrt((double)numerator/denumerator)) :RealRationalOperation.getInstance(sqrtnum,sqrtde);
 	    	}
 	        if (a.isRealFloatingNumber()){
 	        	final double val = a.doubleValue();
@@ -365,12 +363,12 @@ public class PowerOperation extends LinkingOperation
 	        return new SquareRootOperation(a);
 	    }
 
-	    
+
 		@Override
 		public final Operation calculate (VariableAmount object, CalculationController control){
 	        return calculate(a.calculate(object, control));
 	    }
-	    
+
 		@Override
 		public final StringBuilder toString(Print type, StringBuilder stringBuilder){
 	    	switch(type){
@@ -381,12 +379,12 @@ public class PowerOperation extends LinkingOperation
 	     	}
 	    }
 	}
-	
+
 	public static final class CubeRootOperation extends PowerOperation{
 	    public CubeRootOperation (Operation a){
 	    	super(a, RealRationalOperation.POSITIVE_THIRDS);
 	    }
-	
+
 	    public static Operation calculate(final Operation a, final CalculationController control){
 	        if (a.isRealFloatingNumber())
 	            return new RealDoubleOperation(Math.cbrt(a.doubleValue()));
@@ -400,28 +398,29 @@ public class PowerOperation extends LinkingOperation
 	        }
 	        return PowerOperation.calculate(a, RealRationalOperation.POSITIVE_THIRDS, control);
 	    }
-	
-	    
+
+
 		@Override
 		public Operation calculate (VariableAmount object, CalculationController control){
 	        return calculate(a.calculate(object, control), control);
 	    }
 
-		public final StringBuilder toString(Print type, StringBuilder stringBuilder){
+		@Override
+        public final StringBuilder toString(Print type, StringBuilder stringBuilder){
     		return a.toString(type, stringBuilder.append("cbrt(")).append(')');
 	    }
 	}
-	
+
 	public static final class SquareOperation extends PowerOperation{
 		private SquareOperation(Operation a){
 			super(a, RealLongOperation.POSITIVE_TWO);
 		}
-	    
+
 		@Override
 		public Operation calculate (VariableAmount object, CalculationController control){
-	        return calculate (a.calculate(object, control), null);  
+	        return calculate (a.calculate(object, control), null);
 	    }
-		
+
 	    public static final Operation calculate (Operation a, CalculationController control){
 	        if (a.isRealIntegerNumber()){
 	        	long val = a.longValue();
@@ -453,20 +452,20 @@ public class PowerOperation extends LinkingOperation
 	        	final double ar = a.doubleValue(), ai = a.doubleValueImag();
 	        	return ComplexDoubleOperation.get(ar*ar-ai*ai, ar*ai);
 	        }
-	    	return calculate (a, RealLongOperation.POSITIVE_TWO, control);  
+	    	return calculate (a, RealLongOperation.POSITIVE_TWO, control);
 	    }
 	}
-	
+
 	public static final class ExponentOperation extends PowerOperation{
 		public ExponentOperation(Operation b){
 			super(RealDoubleOperation.E, b);
 		}
-	    
+
 		@Override
 		public Operation calculate (VariableAmount object, CalculationController control){
-	        return calculate (b.calculate(object, control), null);  
+	        return calculate (b.calculate(object, control), null);
 	    }
-		
+
 	    public static final Operation calculate (Operation b, CalculationController control){
 	        if (b.isRealIntegerNumber()){
 	        	long value = b.longValue();
@@ -480,11 +479,11 @@ public class PowerOperation extends LinkingOperation
 	        	final double aexp = Math.exp(b.doubleValue()), ai = b.doubleValueImag();
 	        	return ComplexDoubleOperation.get(Math.cos(ai)*aexp, Math.sin(ai)*aexp);
 	        }
-	    	return calculate (RealDoubleOperation.E, b, control);  
+	    	return calculate (RealDoubleOperation.E, b, control);
 	    }
 	}
-	
-	
+
+
 	@Override
 	public Operation getInstance(List<Operation> subclasses) {
 		return getInstance(subclasses.get(0), subclasses.get(1));

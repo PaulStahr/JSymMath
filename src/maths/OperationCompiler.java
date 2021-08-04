@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
  * SOFTWARE.
  ******************************************************************************/
 package maths;
-	
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -48,7 +48,7 @@ import maths.functions.CrossProductOperation;
 import maths.functions.CumSumOperation;
 import maths.functions.DeterminantenOperation;
 import maths.functions.DifferentiationOperation;
-import maths.functions.Fakultaet;
+import maths.functions.Faculty;
 import maths.functions.ForOperation;
 import maths.functions.FormatOperation;
 import maths.functions.GgtOperation;
@@ -77,7 +77,7 @@ import maths.functions.RealPartOperation;
 import maths.functions.RoundOperation;
 import maths.functions.RowReducedEchelonFormOperation;
 import maths.functions.SignOperation;
-import maths.functions.SkalarProductOpertion;
+import maths.functions.ScalarProductOpertion;
 import maths.functions.SleepOperation;
 import maths.functions.SolveOperation;
 import maths.functions.SortOperation;
@@ -139,7 +139,7 @@ import util.StringUtils;
 import util.data.IntegerArrayList;
 
 
-/** 
+/**
 * @author  Paul Stahr
 * @version 04.02.2012
 */
@@ -147,8 +147,8 @@ public final class OperationCompiler
 {
     private static final char calculationCharacters[];
     private static final byte calculationCharactersPrirority[];
-	private static ArrayList<ProgramFunction> programFunction = new ArrayList<ProgramFunction>();
-    
+	private static ArrayList<ProgramFunction> programFunction = new ArrayList<>();
+
 	static{
 	    final char characters[][] = {{Characters.END_COMMAND},
 				{Characters.SET},
@@ -176,13 +176,21 @@ public final class OperationCompiler
 				calculationCharactersPrirority[Arrays.binarySearch(calculationCharacters, c)] = j;
 	}
 
+	public static final char getCalculationChar(int pos) {
+	    return calculationCharacters[pos];
+	}
+
+	public static final int getCalculationCharCount() {
+	    return calculationCharacters.length;
+	}
+
 	public static final boolean isCalculationChar(char c){
 		return Arrays.binarySearch(calculationCharacters, c)>=0;
 	}
 
 	/**
      * Gibt eine Operation zurueck
-     * @param b der Wert den man haben will 
+     * @param b der Wert den man haben will
      * @return die Boolean Operation
      */
     public static final BooleanOperation get (boolean b){
@@ -196,16 +204,16 @@ public final class OperationCompiler
     public static final RealDoubleOperation get (double rechnung){
         return new RealDoubleOperation (rechnung);
     }
-    
+
     public static void addProgramFunction(ProgramFunction pf){
     	if (pf == null)
     		throw new NullPointerException();
     	programFunction.add(pf);
     }
-    
+
     public static final StringBuilder toString(StringBuilder strB, double values[])
     {
-    	
+
     	strB.append('{');
     	if (values.length != 0)
     	{
@@ -217,10 +225,10 @@ public final class OperationCompiler
     	}
     	return strB.append('}');
     }
-    
+
     public static final StringBuilder toString(StringBuilder strB, long values[])
     {
-    	
+
     	strB.append('{');
     	if (values.length != 0)
     	{
@@ -232,10 +240,10 @@ public final class OperationCompiler
     	}
     	return strB.append('}');
     }
-    
+
     public static final StringBuilder toString(StringBuilder strB, int values[])
     {
-    	
+
     	strB.append('{');
     	if (values.length != 0)
     	{
@@ -247,21 +255,21 @@ public final class OperationCompiler
     	}
     	return strB.append('}');
     }
-    
+
 	/*private static enum ParseCondition{
 		VARIABLE_NAME, FUNCTION_NAME, START;
 	}
-	
+
 	private static class OperationWrapper{
 		private final int prirority;
 		private final CharSequence str;
-		
+
 		private OperationWrapper(int prirority, CharSequence str){
 			this.prirority = prirority;
 			this.str = str;
 		}
 	}*/
-	
+
     /*public static final Operation compile2(CharSequence str) throws OperationParseException{
     	if (str == null)
     		throw new NullPointerException();
@@ -274,24 +282,28 @@ public final class OperationCompiler
     		final char charAt = str.charAt(i);
     		switch (pc){
     			case START:
-    				
+
     		}
     	}
     }*/
-    
+
+    public static final int getPriority(char c) {
+        return calculationCharactersPrirority[Arrays.binarySearch(calculationCharacters, c)];
+    }
+
     public static class CompileOptions
     {
     	boolean interpret_latex = true;
     }
-    
+
     public static final Operation compile(CharSequence str, CompileOptions opt) throws OperationParseException{
     	return compile(str, 0, str.length(),opt);
     }
-    
+
     public static final Operation compile(CharSequence str) throws OperationParseException{
     	return compile(str, 0, str.length(), new CompileOptions());
     }
-    
+
     public static final Operation compile(CharSequence str, int begin, int end) throws OperationParseException{
     	return compile(str, begin, end, new CompileOptions());
     }
@@ -309,7 +321,7 @@ public final class OperationCompiler
     			case '\\':{
     				res.append(charAt);
     				if (++i >= str.length())
-        				throw new OperationParseException(str.subSequence(begin, end));    					
+        				throw new OperationParseException(str.subSequence(begin, end));
     				res.append(str.charAt(i));
     				continue;
     			}case '"':{
@@ -373,7 +385,7 @@ public final class OperationCompiler
     					case 'n' : return CharacterOperation.getInstance('\n');
     					case 't' : return CharacterOperation.getInstance('\t');
     				}
-    			}   			
+    			}
         		if (StringUtils.equals(str, begin, end, "true"))
     	            return BooleanOperation.TRUE;
     	       break;
@@ -390,17 +402,17 @@ public final class OperationCompiler
         }
     	RealLongOperation lo = end - begin >= 2 && firstChar == '0' && str.charAt(begin + 1) == 'x' ? RealLongOperation.valueOf(str, 2 + begin, end, 16) : RealLongOperation.valueOf(str, begin, end, 10);
         if (lo != null)
-        	return lo;       
+        	return lo;
         try{
         	if (MathematicStringUtil.isDouble(str, begin, end))
         		return new RealDoubleOperation(Double.parseDouble(str.substring(begin, end)));
         } catch (NumberFormatException e){}
-        	
+
         final int indexOfCharacter = MathematicStringUtil.lastIndexOf (str, begin, end, calculationCharacters, calculationCharactersPrirority);
         if (indexOfCharacter != -1){
         	final char c1 = str.charAt(indexOfCharacter), c0;
-        	final Operation o = (c1 == Characters.ADD || c1 == Characters.SUB) && indexOfCharacter != begin && isCalculationChar(c0 = str.charAt(indexOfCharacter - 1)) ? 
-        			  get(c0, str, begin, indexOfCharacter-1, str, indexOfCharacter, end, opt) 
+        	final Operation o = (c1 == Characters.ADD || c1 == Characters.SUB) && indexOfCharacter != begin && isCalculationChar(c0 = str.charAt(indexOfCharacter - 1)) ?
+        			  get(c0, str, begin, indexOfCharacter-1, str, indexOfCharacter, end, opt)
         			: get (c1, str, begin, indexOfCharacter, str, indexOfCharacter + 1, end, opt);
         	if (o == null)
         		throw new OperationParseException(str);
@@ -419,10 +431,10 @@ public final class OperationCompiler
         		}
         	throw new OperationParseException(str);
         }
-        	
+
         switch(lastChar){
 	    	case '!':{
-	    		return new Fakultaet(compileRek(str, begin ,end - 1, opt));
+	    		return new Faculty(compileRek(str, begin ,end - 1, opt));
 	    	}case ']':{
 	    		final int index = MathematicStringUtil.lastIndexOf(str, begin, end, '[');//TODO
 	            if (index != -1 && MathematicStringUtil.onlyBrackets(str, index, end, '[', ']'))
@@ -439,8 +451,8 @@ public final class OperationCompiler
 		            {
 		            	final IntegerArrayList ial = new IntegerArrayList(3);
 			            MathematicStringUtil.split(str, indexOfBracket+1,end-1, ',', ial);
-			            parameter = new Operation[ial.size() + 1];    	
-			            
+			            parameter = new Operation[ial.size() + 1];
+
 			            for (int i = 0; i < parameter.length;i++)
 			            {
 			            	int i0 = i == 0 ? indexOfBracket+1 : ial.getI(i - 1) + 1;
@@ -505,7 +517,7 @@ public final class OperationCompiler
 		                        case "real":	return new RealPartOperation(a);
 		                        case "string":	return new ToStringOperation (a);
 		                        case "sum":    	return new SumOfArrayOperation(a);
-		                        case "sqrt":   	return new PowerOperation.SquareRootOperation(a);                			
+		                        case "sqrt":   	return new PowerOperation.SquareRootOperation(a);
 		                        case "sin":    	return new SinusOperation(a);
 		                        case "sinh":	return new SinusHyperbolicOperation(a);
 		                        case "sign":	return new SignOperation(a);
@@ -599,49 +611,60 @@ public final class OperationCompiler
 		        break;
 	    	}default:{
 	            if (Variable.isValidName(str, begin, end))
-	                return new UserVariableOperation (str, begin, end);	    		
+	                return new UserVariableOperation (str, begin, end);
 	    	}
 	    }
         throw new OperationParseException(str);
     }
-    
+
     private static final Operation get(char character, String operand0, int begin0, int end0, String operand1, int begin1, int end1, CompileOptions opt) throws OperationParseException{
         final Operation b = compileRek(operand1, begin1, end1, opt);
         if (begin0 != end0){
             final Operation a = compileRek(operand0, begin0, end0, opt);
-            switch (character){
-                case Characters.EQ      	:return new EqualsOperation(a,b);
-                case Characters.NOT_EQ  	:return new UnequalsOperation(a,b);
-                case Characters.LOW     	:return new LowerOperation(a,b);
-                case Characters.HIGH   		:return new HigherOperation(a,b);
-                case Characters.LOW_EQ  	:return new LowerEqualsOperation(a,b);
-                case Characters.HIGH_EQ 	:return new HigherEqualsOperation(a,b);
-                case Characters.ELEM_OF 	:return new IsElementOfOperation(a,b);
-                case Characters.NOT_ELEM_OF	:return new IsNotElementOfOperation(a,b);
-                case Characters.AND   		:return new AndOperation(a,b);
-                case Characters.OR  		:return new OrOperation(a,b);
-                case Characters.SET   		:return new SetOperation(a, b);
-                case Characters.ADD     	:return new AdditionOperation(a,b);
-                case Characters.SUB     	:return new SubtractionOperation(a,b);
-                case Characters.CONCAT  	:return new ConcatOperation(a,b);
-                case Characters.MULT		:return new MultiplicationOperation(a,b);
-                case Characters.DIV			:return new DivisionOperation(a,b);
-                case Characters.MOD     	:return new Modulo(a,b);
-                case Characters.POW     	:return PowerOperation.getInstance(a,b);
-                case Characters.MULT_MAT   	:return new MatrixMultiplication(a,b);
-                case Characters.MULT_CROSS 	:return new CrossProductOperation(a, b);
-                case Characters.SUBSET		:return new IsSubsetOperation(a, b);
-                case Characters.NOT_SUBSET	:return new IsNotSubsetOperation(a, b);
-                case Characters.MULT_SKAL	:return new SkalarProductOpertion(a, b);
-                case Characters.END_COMMAND	:return new CommandOperation(a,b);
-            }
-        }else{
-            switch (character){
-                case Characters.ADD		:return b;
-                case Characters.SUB		:return new NegativeOperation(b);
-                case Characters.NOT   	:return new NotOperation(b);
-                case Characters.HIGH_T	:return new TransposeOperation(b);
-            }
+            return get(character, a, b);
+        }else
+        {
+            return get(character, b);
+        }
+    }
+
+    public static final Operation get(char character, Operation a, Operation b){
+        switch (character){
+            case Characters.EQ      	:return new EqualsOperation(a,b);
+            case Characters.NOT_EQ  	:return new UnequalsOperation(a,b);
+            case Characters.LOW     	:return new LowerOperation(a,b);
+            case Characters.HIGH   		:return new HigherOperation(a,b);
+            case Characters.LOW_EQ  	:return new LowerEqualsOperation(a,b);
+            case Characters.HIGH_EQ 	:return new HigherEqualsOperation(a,b);
+            case Characters.ELEM_OF 	:return new IsElementOfOperation(a,b);
+            case Characters.NOT_ELEM_OF	:return new IsNotElementOfOperation(a,b);
+            case Characters.AND   		:return new AndOperation(a,b);
+            case Characters.OR  		:return new OrOperation(a,b);
+            case Characters.SET   		:return new SetOperation(a, b);
+            case Characters.ADD     	:return new AdditionOperation(a,b);
+            case Characters.SUB     	:return new SubtractionOperation(a,b);
+            case Characters.CONCAT  	:return new ConcatOperation(a,b);
+            case Characters.MULT		:return new MultiplicationOperation(a,b);
+            case Characters.DIV			:return new DivisionOperation(a,b);
+            case Characters.MOD     	:return new Modulo(a,b);
+            case Characters.POW     	:return PowerOperation.getInstance(a,b);
+            case Characters.MULT_MAT   	:return new MatrixMultiplication(a,b);
+            case Characters.MULT_CROSS 	:return new CrossProductOperation(a, b);
+            case Characters.SUBSET		:return new IsSubsetOperation(a, b);
+            case Characters.NOT_SUBSET	:return new IsNotSubsetOperation(a, b);
+            case Characters.MULT_SKAL	:return new ScalarProductOpertion(a, b);
+            case Characters.END_COMMAND	:return new CommandOperation(a,b);
+        }
+        return null;
+    }
+
+    public static final Operation get(char character, Operation b)
+    {
+       switch (character){
+            case Characters.ADD		:return b;
+            case Characters.SUB		:return new NegativeOperation(b);
+            case Characters.NOT   	:return new NotOperation(b);
+            case Characters.HIGH_T	:return new TransposeOperation(b);
         }
         return null;
     }
