@@ -248,9 +248,9 @@ public abstract class Calculate
 
 	/**
 	 * GGt Without checking
-	 * Warning: Make sure that x>0 and y>0
-	 * @param x
-	 * @param y
+	 * Warning: Make sure that x and y are greater than 0
+     * @param x First value
+     * @param y Second value
 	 * @return GGt of x and y
 	 */
 	public static final long ggtUnchecked(long x, long y){
@@ -300,9 +300,9 @@ public abstract class Calculate
     }
 
     /**
-     * Warning: Make sure that x>0 and y>0
-     * @param x
-     * @param y
+     * Warning: Make sure that x and y are greater than 0
+     * @param x First value
+     * @param y Second value
      * @return Kgv of x and y
      */
     public static final long kgvUnchecked(final long x, final long y){
@@ -328,10 +328,10 @@ public abstract class Calculate
     	return erg;
     }
     /**
-     *
-     * @param n
-     * @param probability
-     * @param k
+     * Calculates the propability, that k samples are positive
+     * @param n Number of samples
+     * @param probability Prepability for positive event
+     * @param k Number of positive events to achieve
      * @return BinomialCoefficient of n, p and k
      */
     public static final double binomPdf(long n, double probability, long k){
