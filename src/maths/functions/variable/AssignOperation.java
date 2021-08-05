@@ -41,14 +41,14 @@ import maths.variable.VariableAmount;
 * @author  Paul Stahr
 * @version 04.02.2012
 */
-public final class SetOperation extends LinkingOperation
+public final class AssignOperation extends LinkingOperation
 {
     public final Operation a, b;
     public final int nameId;
     public final StringId.StringIdObject nameObject;
     private final Operation indexes[];
 
-    public SetOperation (Operation a, Operation b){
+    public AssignOperation (Operation a, Operation b){
     	if ((this.a = a) == null || b == null)
     		throw new NullPointerException();
     	if (b instanceof ArrayIndexOperation){
@@ -74,12 +74,12 @@ public final class SetOperation extends LinkingOperation
     	this.b = b;
     }
 
-    public SetOperation (Operation a, Operation b, String name, Operation indexes[]){
+    public AssignOperation (Operation a, Operation b, String name, Operation indexes[]){
     	this(a, b, StringId.getStringAndId(name), indexes);
     }
 
 
-	public SetOperation(Operation a, Operation b, StringIdObject name, Operation indexes[]) {
+	public AssignOperation(Operation a, Operation b, StringIdObject name, Operation indexes[]) {
     	if ((this.a = a) == null || (this.b = b) == null)
     		throw new NullPointerException();
     	this.nameObject = name;
@@ -101,7 +101,7 @@ public final class SetOperation extends LinkingOperation
     		for (int i=0;i<newIndexes.length;i++)
     			if ((newIndexes[i] = indexes[i].calculate(object, control)) instanceof ExceptionOperation)
     				return newIndexes[i];
-    		return new SetOperation(a,b,nameObject,newIndexes);
+    		return new AssignOperation(a,b,nameObject,newIndexes);
     	}
         if (b instanceof UserVariableOperation){
            	if (a.isArray())
@@ -119,7 +119,7 @@ public final class SetOperation extends LinkingOperation
         	object.replaceAddLocal(new Variable(nameObject, a, ops));
             return  a;
         }
-        return new SetOperation(a,b);
+        return new AssignOperation(a,b);
     }
 
 	@Override
@@ -161,6 +161,6 @@ public final class SetOperation extends LinkingOperation
 
 	@Override
 	public Operation getInstance(List<Operation> subclasses) {
-		return new SetOperation(subclasses.get(0), subclasses.get(1));
+		return new AssignOperation(subclasses.get(0), subclasses.get(1));
 	}
 }

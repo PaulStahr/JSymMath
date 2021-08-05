@@ -103,19 +103,19 @@ public abstract class Operation
     }
 
     /**
-     * Die Rechnung wird an den \u00FCbergebenen StringBuilder angeh\u00E4ngt
+     * Calculation will be appended to the given StringBuilder
      * @param stringBuilder
-     * @return
+     * @return Given StringBuilder
      */
     public StringBuilder toString(StringBuilder stringBuilder){
     	return toString(Print.CALGRAPH, stringBuilder);
     }
 
     /**
-     * Die Rechnung wird an den \u00FCbergebenen StringBuilder angeh\u00E4ngt
+     * Calculation will be appended to the given StringBuilder
      * @param type
      * @param stringBuilder
-     * @return
+     * @return Given StringBuilder
      */
     public abstract StringBuilder toString (Print type, StringBuilder stringBuilder);
 
@@ -136,8 +136,7 @@ public abstract class Operation
         return false;
     }
     /**
-     * Gibt zur&uuml;ck ob die beiden Rechnungen gleich sind.
-     * Gibt true zurueck, nur wenn die beiden Rechnungen sicher gleich sind. Sonst immer false.
+     * Recursively checks if both CalculationOperations are equal
      */
 
     @Override

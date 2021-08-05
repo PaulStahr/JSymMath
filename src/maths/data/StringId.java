@@ -73,7 +73,7 @@ public class StringId {
 	/**
 	 * Needs O(1)
 	 * @param stringId
-	 * @return
+	 * @return The searched StringIdObject
 	 */
 	public static final StringIdObject getStringAndId(int stringId){
 		return stringId >= 0 && stringId < length ? dataIdSorted[stringId] : null;
@@ -94,7 +94,7 @@ public class StringId {
 	 * Adding new String needs O(n)
 	 * Getting existing String needs O(log n)
 	 * @param str
-	 * @return
+	 * @return The found or created StringIdObject
 	 */
 	public static final StringIdObject getStringAndId(String str){
 		int index = getIndex(str);
@@ -122,8 +122,9 @@ public class StringId {
 	 * Adding new String needs O(n)
 	 * Getting existing String needs O(log n)
 	 * @param str
-	 * @return
-	 */	public static final StringIdObject getStringAndId(String str, int begin, int end){
+	 * @return The found or created StringIdObject
+	 */
+	public static final StringIdObject getStringAndId(String str, int begin, int end){
 		int index = getIndex(str, begin, end);
 		if (index >= 0)
 			return dataNameSorted[index];
@@ -163,7 +164,7 @@ public class StringId {
 	/**
 	 * needs O(log n)
 	 * @param name
-	 * @return
+	 * @return The index of the StringIdObject
 	 */
     private static final int getIndex (String name){
 		int low = 0, high = length-1;

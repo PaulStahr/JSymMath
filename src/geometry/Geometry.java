@@ -1176,8 +1176,8 @@ public class Geometry {
 
 	public static void toCart(Vector3d vec, double azimuth, double elevation, double distance) {
 		vec.x = distance * Math.sin(elevation);
-		double cos = Math.cos(elevation);
-		vec.y = distance * cos * Math.sin(azimuth);
-		vec.z = distance * cos * Math.cos(azimuth);
+		double cos = distance * Math.cos(elevation);
+		vec.y = cos * Math.sin(azimuth);
+		vec.z = cos * Math.cos(azimuth);
 	}
 }

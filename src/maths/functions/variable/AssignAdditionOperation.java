@@ -41,14 +41,14 @@ import maths.variable.VariableAmount;
 * @author  Paul Stahr
 * @version 04.02.2012
 */
-public final class SetAdditionOperation extends LinkingOperation
+public final class AssignAdditionOperation extends LinkingOperation
 {
     public final Operation a, b;
     public final int nameId;
     public final StringId.StringIdObject nameObject;
     private final Operation indexes[];
 
-    public SetAdditionOperation (Operation a, Operation b){
+    public AssignAdditionOperation (Operation a, Operation b){
     	if ((this.a = a) == null || b == null)
     		throw new NullPointerException();
     	if (b instanceof ArrayIndexOperation){
@@ -74,12 +74,12 @@ public final class SetAdditionOperation extends LinkingOperation
     	this.b = b;
     }
 
-    public SetAdditionOperation (Operation a, Operation b, String name, Operation indexes[]){
+    public AssignAdditionOperation (Operation a, Operation b, String name, Operation indexes[]){
     	this(a, b, StringId.getStringAndId(name), indexes);
     }
 
 
-	public SetAdditionOperation(Operation a, Operation b, StringIdObject name, Operation indexes[]) {
+	public AssignAdditionOperation(Operation a, Operation b, StringIdObject name, Operation indexes[]) {
     	if ((this.a = a) == null || (this.b = b) == null)
     		throw new NullPointerException();
     	this.nameObject = name;
@@ -101,7 +101,7 @@ public final class SetAdditionOperation extends LinkingOperation
     		for (int i=0;i<newIndexes.length;i++)
     			if ((newIndexes[i] = indexes[i].calculate(object, control)) instanceof ExceptionOperation)
     				return newIndexes[i];
-    		return new SetAdditionOperation(a,b,nameObject,newIndexes);
+    		return new AssignAdditionOperation(a,b,nameObject,newIndexes);
     	}
         if (b instanceof UserVariableOperation){
            	Variable v = object.getById(nameId);
@@ -122,7 +122,7 @@ public final class SetAdditionOperation extends LinkingOperation
         	object.replaceAddGlobal(new Variable(nameObject, a, ops));
             return  a;
         }
-        return new SetAdditionOperation(a,b);
+        return new AssignAdditionOperation(a,b);
     }
 
 	@Override
@@ -161,6 +161,6 @@ public final class SetAdditionOperation extends LinkingOperation
 
 	@Override
 	public Operation getInstance(List<Operation> subclasses) {
-		return new SetAdditionOperation(subclasses.get(0), subclasses.get(1));
+		return new AssignAdditionOperation(subclasses.get(0), subclasses.get(1));
 	}
 }

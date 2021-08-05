@@ -409,8 +409,6 @@ public class ArrayUtil {
 		}
 	}
 
-
-
     public static void multAdd(float[] in, int iBegin, int iEnd, float[] out, int oBegin, float mult) {
         for (; iBegin < iEnd; ++iBegin, ++oBegin)
         {

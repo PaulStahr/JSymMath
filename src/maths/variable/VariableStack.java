@@ -106,9 +106,9 @@ public class VariableStack implements VariableAmount, Iterable<Variable>, Variab
     }
 
     /**
-     * F\u00FCgt eine Variable hinzu
-     * @param Die Variable
-     * @return boolean hinzuf\u00FCgen erfolgreich
+     * Adds a variable
+     * @param v The variable to add
+     * @return If adding variable was successful
      */
     @Override
 	public final boolean add (Variable v){

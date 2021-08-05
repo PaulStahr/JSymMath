@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,9 +21,7 @@
  ******************************************************************************/
 package geometry;
 
-import geometry.Vector3f;
-
-/** 
+/**
 * @author  Paul Stahr
 * @version 04.02.2012
 */
@@ -75,24 +73,24 @@ public final class Vector4d implements Vectord
     	default: throw new ArrayIndexOutOfBoundsException(index);
     	}
     }
-    
+
     /**
-     * erzeugt einen neuen Vektor
-     * @param vektor der Vektor dessen eigenschaften \u00FCbernommen werden
+     * Creates a new vector
+     * @param vector The vector to be copied
      */
     public Vector4d(final Vector4d vector){
         set(vector);
     }
-        
+
     /**
      * Subtrahiert den Vektor
-     * @param vektor der Subtrahiert
+     * @param vector der Subtrahiert
      */
-    public void sub(final Vector4d vektor){
-        x -= vektor.x;
-        y -= vektor.y;
-        z -= vektor.z;
-        w -= vektor.w;
+    public void sub(final Vector4d vector){
+        x -= vector.x;
+        y -= vector.y;
+        z -= vector.z;
+        w -= vector.w;
     }
 
     /**
@@ -108,7 +106,7 @@ public final class Vector4d implements Vectord
      * erzeugt eine Normale
      */
     public final void calcNormal(final Vector3f v0, final Vector3f v1, final Vector3f v2){
-        final double ax = v0.x-v1.x, ay = v0.y-v1.y, az = v0.z-v1.z; 
+        final double ax = v0.x-v1.x, ay = v0.y-v1.y, az = v0.z-v1.z;
         final double bx = v1.x-v2.x, by = v1.y-v2.y, bz = v1.z-v2.z;
         x = ay*bz - az*by;
         y = az*bx - ax*bz;
@@ -155,7 +153,7 @@ public final class Vector4d implements Vectord
     public final double getLength(){
         return Math.sqrt(dot());
     }
-    
+
     /**
      * Rotiert den Vektor.
      * Die Rotation erfolgt in der Rihenfolge XYZ
@@ -183,7 +181,7 @@ public final class Vector4d implements Vectord
     	rotateRadiansY(-r.getYRadians());
     	rotateRadiansX(-r.getXRadians());
     }
-    
+
     /**
      * Rotiert den Vektor.
      * @param x die Rotation um die x-Achse
@@ -267,7 +265,7 @@ public final class Vector4d implements Vectord
         this.y += y;
         this.z += z;
     }
-    
+
     @Override
     public final int size()
     {

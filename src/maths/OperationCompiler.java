@@ -132,7 +132,7 @@ import maths.functions.io.WriteCsvOperation;
 import maths.functions.io.WriteOperation;
 import maths.functions.variable.DefineOperation;
 import maths.functions.variable.DeleteOperation;
-import maths.functions.variable.SetOperation;
+import maths.functions.variable.AssignOperation;
 import maths.variable.UserVariableOperation;
 import maths.variable.Variable;
 import util.StringUtils;
@@ -551,7 +551,7 @@ public final class OperationCompiler
 		                        case "writecsv" :return new WriteCsvOperation(a, b);
 		                		case "set":{
 		                        	if (a instanceof UserVariableOperation || a instanceof UserFunctionOperation || a instanceof ArrayIndexOperation)
-		                        		return new SetOperation(b, a);
+		                        		return new AssignOperation(b, a);
 		                        	throw new OperationParseException(str);
 		                        }case "solve":return new SolveOperation(a, b);
 				                case "sum":	return new SumIteratorOperation(a, b);
@@ -640,7 +640,7 @@ public final class OperationCompiler
             case Characters.NOT_ELEM_OF	:return new IsNotElementOfOperation(a,b);
             case Characters.AND   		:return new AndOperation(a,b);
             case Characters.OR  		:return new OrOperation(a,b);
-            case Characters.SET   		:return new SetOperation(a, b);
+            case Characters.SET   		:return new AssignOperation(a, b);
             case Characters.ADD     	:return new AdditionOperation(a,b);
             case Characters.SUB     	:return new SubtractionOperation(a,b);
             case Characters.CONCAT  	:return new ConcatOperation(a,b);

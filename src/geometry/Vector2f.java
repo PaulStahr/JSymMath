@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,7 +21,7 @@
  ******************************************************************************/
 package geometry;
 
-/** 
+/**
 * @author  Paul Stahr
 * @version 04.02.2012
 */
@@ -37,10 +37,9 @@ public final class Vector2f implements Vectorf
     public Vector2f(){}
 
     /**
-     * erzeugt einen neuen Vektor
-     * @param x L\u00E4nge des Vektors in x-Richtung
-     * @param y L\u00E4nge des Vektors in y-Richtung
-     * @param z L\u00E4nge des Vektors in z-Tichtung
+     * Creates a new vector
+     * @param x x-Component
+     * @param y y-Component
      */
     public Vector2f(final float x,final float y){
         this.x=x;
@@ -48,13 +47,13 @@ public final class Vector2f implements Vectorf
     }
 
     /**
-     * erzeugt einen neuen Vektor
-     * @param vektor der Vektor dessen eigenschaften \u00FCbernommen werden
+     * Creates a new vector
+     * @param vector Vector to be copied
      */
     public Vector2f(final Vector2f vector){
        set(vector);
     }
-    
+
     @Override
     public void setElem(int index, float value)
     {
@@ -67,9 +66,9 @@ public final class Vector2f implements Vectorf
     }
 
 
-        
+
     /**
-     * Subtrahiert den Vektor
+     * Subtracts a vector
      * @param vektor der Subtrahiert
      */
     public void sub(final Vector2f vektor){
@@ -78,7 +77,7 @@ public final class Vector2f implements Vectorf
     }
 
     /**
-     * Setzt die L\u00E4nge des Vektors auf 1
+     * Sets the length to 1
      */
     public final void normalize(){
         final float len = 1/getLength();
@@ -87,8 +86,8 @@ public final class Vector2f implements Vectorf
     }
 
     /**
-     * Multipliziert die L\u00E4nge des Vektors
-     * @param mult Multiplikator
+     * Scalar-Multiplication
+     * @param mult multiplicator
      */
     public final void multiply(final float mult){
         x*=mult;
@@ -96,8 +95,8 @@ public final class Vector2f implements Vectorf
     }
 
     /**
-     * Setzt den Vektor auf eine Bestimmte L\u00E4nge
-     * @param length die neue L\u00E4nge des Vektors
+     * Sets length to a specified value
+     * @param length new length of the vector
      */
     public final void setLength(double length){
         length /= getLength();
@@ -112,7 +111,7 @@ public final class Vector2f implements Vectorf
     public final float getLength(){
         return (float)Math.sqrt(x * x + y * y);
     }
-    
+
     /**
      * Rotiert den Vektor.
      * @param z die Rotation um die z-Achse
@@ -126,10 +125,9 @@ public final class Vector2f implements Vectorf
     }
 
     /**
-     * Setzt den Vektor auf die bestimmte Werte.
-     * @param x x-Wert des Vektors
-     * @param y y-Wert des Vektors
-     * @param z z-Wert des Vektors
+     * Sets the vector to the given values
+     * @param x x-Component
+     * @param y y-Component
      */
     public final void set(final float x, final float y){
         this.x=x;
@@ -137,40 +135,32 @@ public final class Vector2f implements Vectorf
     }
 
     /**
-     * Setzt den Vektor auf bestimmte Werte.
-     * @param vektor der Vektor auf den die Werte gesetzt werden sollen
+     * Sets the vector to the given vector
+     * @param vector The vector from which the values are taken
      */
-    public final void set(final Vector2f vektor){
-        x = vektor.x;
-        y = vektor.y;
+    public final void set(final Vector2f vector){
+        x = vector.x;
+        y = vector.y;
     }
 
-    /**
-     * Addiert zum Vektor bestimmte Werte.
-     * @param vektor der Vektor der addiert werden soll
-     */
     public final void add(final Vector2f vektor){
         x += vektor.x;
         y += vektor.y;
     }
 
     /**
-     * Addiert zum Vektor bestimmte Werte.
-     * @param x x-Wert der Addiert wird
-     * @param y y-Wert der Addiert wird
-     * @param z z-Wert der Addiert wird
+     * Add values to the vector
+     * @param x x-Component to add
+     * @param y y-Component to add
      */
     public final void add(final float x, final float y){
         this.x += x;
         this.y += y;
     }
-    
+
     @Override
-    public final int size()
-    {
-    	return 2;
-    }
-    
+    public final int size(){return 2;}
+
     @Override
     public double getD(int index)
     {
@@ -181,7 +171,7 @@ public final class Vector2f implements Vectorf
 	    	default: throw new ArrayIndexOutOfBoundsException(index);
     	}
     }
-    
+
     @Override
     public void setElem(int index, double value)
     {

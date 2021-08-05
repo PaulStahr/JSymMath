@@ -247,11 +247,11 @@ public abstract class Calculate
 	}
 
 	/**
-	 * Ggt ohne Sonderbehandlung
+	 * GGt Without checking
 	 * Warning: Make sure that x>0 and y>0
 	 * @param x
 	 * @param y
-	 * @return
+	 * @return GGt of x and y
 	 */
 	public static final long ggtUnchecked(long x, long y){
     	byte d=0;
@@ -303,7 +303,7 @@ public abstract class Calculate
      * Warning: Make sure that x>0 and y>0
      * @param x
      * @param y
-     * @return
+     * @return Kgv of x and y
      */
     public static final long kgvUnchecked(final long x, final long y){
     	final long c = x/ggtUnchecked(x, y);
@@ -316,7 +316,7 @@ public abstract class Calculate
      * @param n
      * @param probability
      * @param k
-     * @return
+     * @return BinomialCoefficient of n, p and k
      */
     public static final double binomCdf(long n, double probability, long k){
     	double erg=0;
@@ -332,7 +332,7 @@ public abstract class Calculate
      * @param n
      * @param probability
      * @param k
-     * @return
+     * @return BinomialCoefficient of n, p and k
      */
     public static final double binomPdf(long n, double probability, long k){
     	final long ncr = ncr(n,k);
@@ -501,30 +501,30 @@ public abstract class Calculate
     	}
     	if (x == 0)
     		return 0l;
-    	long erg = 1;
+    	long res = 1;
     	if (x < 0){
 			x =-x;
     		if ((exp & 1) == 1)
-        		erg = -1;
+        		res = -1;
     	}
 
     	while (true){
     		long nextErg;
     		if ((exp & 1) == 1){
-    			if(erg != (nextErg = erg * x)/x)
+    			if(res != (nextErg = res * x)/x)
     				break;
     		}else{
-    			nextErg = erg;
+    			nextErg = res;
     		}
     		if ((exp >>= 1) == 0)
     			return nextErg;
     		if (x > Integer.MAX_VALUE)
     			break;
     		x *= x;
-    		erg = nextErg;
+    		res = nextErg;
     	}
 
-    	double ergd = erg;
+    	double ergd = res;
     	double xd = x;
     	while (exp != 0){
     		if ((exp & 1) == 1)
@@ -1035,7 +1035,7 @@ public abstract class Calculate
 	 * @param value
 	 * @param eps
 	 * @param df
-	 * @return
+	 * @return The point which is at most eps away from the searched point
 	 */
 	public static final double binarySearch(double min, double max, double value, double eps, DoubleFunctionDouble df)
 	{
