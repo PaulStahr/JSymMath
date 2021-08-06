@@ -49,9 +49,15 @@ public final class Vector3f implements Vectorf
         this.z=z;
     }
 
-    public final boolean equals(Vector3f other, float scalar)
+    @Override
+    public final boolean equals(Object other)
     {
-    	return this.x == other.x * scalar && this.y == other.y * scalar && this.z == other.z * scalar;
+        if (other instanceof Vector3f)
+        {
+            Vector3f v = (Vector3f)other;
+            return this.x == v.x && this.y == v.y && this.z == v.z;
+        }
+        return false;
     }
 
     @Override
@@ -87,15 +93,6 @@ public final class Vector3f implements Vectorf
     /**
      * erzeugt eine Normale
      */
-    public static final Vector3f getNormal(final Vector3f v0, final Vector3f v1, final Vector3f v2){
-        Vector3f vektor = new Vector3f();
-        vektor.calcNormal (v0, v1, v2);
-        return vektor;
-    }
-
-    /**
-     * erzeugt eine Normale
-     */
     public final void calcNormal(final Vector3f v0, final Vector3f v1, final Vector3f v2){
         final float ax = v0.x-v1.x, ay = v0.y-v1.y, az = v0.z-v1.z;
         final float bx = v1.x-v2.x, by = v1.y-v2.y, bz = v1.z-v2.z;
@@ -124,19 +121,24 @@ public final class Vector3f implements Vectorf
         z*=multi;
     }
 
-    public final void set(float data[], int pos)
-    {
-    	x = data[pos];
-    	y = data[pos + 1];
-    	z = data[pos + 2];
-    }
+    public final void set(float data[], int pos)    {x = data[pos];y = data[pos + 1];z = data[pos + 2];}
+    public final void set(DoubleList data, int pos) {x = (float)data.getD(pos);y = (float)data.getD(pos + 1);z = (float)data.getD(pos + 2);}
 
-    public final void set(DoubleList data, int pos)
-    {
-    	x = (float)data.getD(pos);
-    	y = (float)data.getD(pos + 1);
-    	z = (float)data.getD(pos + 2);
-    }
+    /**
+     * Setzt den Vektor auf die bestimmte Werte.
+     * @param x x-Wert des Vektors
+     * @param y y-Wert des Vektors
+     * @param z z-Wert des Vektors
+     */
+    public final void set(final float x, final float y, final float z)  {this.x=x;this.y=y;this.z=z;}
+
+    public final void set(final Vector3d vec) {this.x = (float)vec.x; this.y = (float)vec.y; this.z = (float)vec.z;}
+
+    /**
+     * Setzt den Vektor auf bestimmte Werte.
+     * @param vec der Vektor auf den die Werte gesetzt werden sollen
+     */
+    public final void set(final Vector3f vec) {x = vec.x;y = vec.y;z = vec.z;}
 
     public final void write(float data[], int pos)
     {
@@ -246,29 +248,6 @@ public final class Vector3f implements Vectorf
         float tmp = (float)(cos*x+sin*y);
         y = (float)(cos*y-sin*x);
         x = tmp;
-    }
-
-    /**
-     * Setzt den Vektor auf die bestimmte Werte.
-     * @param x x-Wert des Vektors
-     * @param y y-Wert des Vektors
-     * @param z z-Wert des Vektors
-     */
-    public final void set(final float x, final float y, final float z){this.x=x;
-        this.y=y;
-        this.z=z;
-    }
-
-    public final void set(Vector3d vec){this.x = (float)vec.x; this.y = (float)vec.y; this.z = (float)vec.z;}
-
-    /**
-     * Setzt den Vektor auf bestimmte Werte.
-     * @param vector der Vektor auf den die Werte gesetzt werden sollen
-     */
-    public final void set(final Vector3f vector){
-        x = vector.x;
-        y = vector.y;
-        z = vector.z;
     }
 
     /**
