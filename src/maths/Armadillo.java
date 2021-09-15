@@ -15,17 +15,20 @@ public class Armadillo {
 	{
 		try
 		{
-			if (new File("/home/paul/workspace/CalGraph3D/C++/armadillo_java.so").exists())
+		    File path = new File("src/resources/armadillo_java.so");
+			if (path.exists())
 			{
-				System.load("/home/paul/workspace/CalGraph3D/C++/armadillo_java.so");
+			    System.out.println("Load directly");
+				System.load(path.getAbsolutePath());
 			}
 			else
 			{
+                System.out.println("Load indirectly");
 				JniInterface.loadLib("armadillo_java.so");
 			}
 		}catch(UnsatisfiedLinkError | NullPointerException | IOException e)
 		{
-			System.err.println("Can't load armadillo" +  e);
+			System.err.println("Can't load armadillo " +  e + ' ' + e.getStackTrace()[0]);
 		}
 	}
 

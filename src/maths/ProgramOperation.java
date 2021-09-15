@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -56,7 +56,7 @@ public class ProgramOperation extends FunctionOperation {
 			return new ExceptionOperation("Fehler beim \u00FCbersetzen in Zeile " + e.line);
 		}
 	}
-	
+
 	public ProgramOperation(Operation a) throws InterpretException{
 		if ((this.a = a).isString()){
 			top = interpret(a.stringValue());
@@ -64,7 +64,7 @@ public class ProgramOperation extends FunctionOperation {
 			top = null;
 		}
 	}
-	
+
 	private static byte getType(String line){
 		if (line.length() == 0)
 			return SCIP;
@@ -90,7 +90,6 @@ public class ProgramOperation extends FunctionOperation {
 		return -1;
 	}
 
-	//program("set(erg,0)\nset(oldErg,10000)\nset(c,x+y*ⅈ)\nwhile(abs(erg)<10˄abs(erg-oldErg)>0.1)\nset(oldErg,erg)\nset(erg,erg²+c)\nendwhile\nreturn(ifn(abs(erg)<10,1,0))")
 	private static Item interpret(String str) throws InterpretException{
 		str = str.replace("\r","");
 		ArrayList<String> al = new ArrayList<>();
@@ -142,9 +141,9 @@ public class ProgramOperation extends FunctionOperation {
 			}
 		}
 		return interpret(0, lines.length, lines, types, ops);
-		
+
 	}
-	
+
 	private static Item interpret(final int start, final int end, final String lines[], final byte lineTypes[], final Operation lineOps[]) throws InterpretException{
 		if (end-start == 1){
 			String line = lines[start];
@@ -161,8 +160,8 @@ public class ProgramOperation extends FunctionOperation {
 					throw new InterpretException(start);
 				}
 		}
-			
-		ArrayList<Item> statements = new ArrayList<Item>();
+
+		ArrayList<Item> statements = new ArrayList<>();
 		int rek=0;
 		int lastBegin=-1;
 		int elseIndex = -1;
@@ -220,8 +219,8 @@ public class ProgramOperation extends FunctionOperation {
 			return statements.get(0);
 		return new Statements(statements.toArray(new Item[statements.size()]));
 	}
-	
-	
+
+
 	@Override
 	public Operation calculate(VariableAmount object, CalculationController control) {
 		Item top = this.top;
@@ -253,7 +252,7 @@ public class ProgramOperation extends FunctionOperation {
 	public final int size() {
 		return 1;
 	}
-	
+
 	@Override
 	public final Operation get(int index) {
 		switch (index){
@@ -270,18 +269,18 @@ public class ProgramOperation extends FunctionOperation {
 		}
 		protected abstract Operation calculate(VariableStack vs, CalculationController control);
 	}
-	
+
 	private static class IfElseItem extends Item{
 		private final Operation question;
 		private final Item a, b;
-		
+
 		private IfElseItem(Operation question, Item a, Item b, int ifLine){
 			super(ifLine);
 			this.question = question;
 			this.a = a;
 			this.b = b;
 		}
-		
+
 		@Override
 		protected Operation calculate(VariableStack vs, CalculationController control) {
 			Operation op = question.calculate(vs, control);
@@ -292,17 +291,17 @@ public class ProgramOperation extends FunctionOperation {
 			return new ExceptionOperation("Weder true noch false in Abfrage in Zeile:" + line);
 		}
 	}
-	
+
 	private static class IfItem extends Item{
 		private final Operation question;
 		private final Item a;
-		
+
 		private IfItem(Operation question, Item a, int ifLine){
 			super(ifLine);
 			this.question = question;
 			this.a = a;
 		}
-		
+
 		@Override
 		protected Operation calculate(VariableStack vs, CalculationController control) {
 			Operation op = question.calculate(vs, control);
@@ -312,18 +311,18 @@ public class ProgramOperation extends FunctionOperation {
 				return null;
 			return new ExceptionOperation("Weder true noch false in Abfrage in Zeile:" + line);
 		}
-	}	
-	
+	}
+
 	private static class WhileItem extends Item{
 		private final Operation question;
 		private final Item a;
-		
+
 		private WhileItem(Operation question, Item a, int whileLine){
 			super(whileLine);
 			this.question = question;
 			this.a = a;
 		}
-		
+
 		@Override
 		protected Operation calculate(VariableStack vs, CalculationController control) {
 			while (control == null || !control.getStopFlag()){
@@ -333,51 +332,51 @@ public class ProgramOperation extends FunctionOperation {
 				if (op == BooleanOperation.TRUE){
 					Operation op2 = a.calculate(vs, control);
 					if (op2 != null)
-						return op2;		
+						return op2;
 				}else{
 					return new ExceptionOperation("Weder true noch false in Abfrage int Zeile: " + line);
 				}
 			}
 			return new ExceptionOperation("Stopped");
-		}		
+		}
 	}
-	
+
 	private static class StatementItem extends Item{
 		private final Operation o;
 		private StatementItem (Operation o, int line){
 			super(line);
 			this.o = o;
 		}
-		
+
 		@Override
 		protected Operation calculate(VariableStack vs, CalculationController control) {
 			o.calculate(vs, control);
 			return null;
 		}
 	}
-	
+
 	private static class ReturnItem extends Item{
 		private final Operation o;
 		private ReturnItem (Operation o, int line){
 			super(line);
 			this.o = o;
 		}
-		
+
 		@Override
 		protected Operation calculate(VariableStack vs, CalculationController control) {
 			return o.calculate(vs, control);
-		}		
+		}
 	}
-	
+
 	private static class Statements extends Item{
 		public final Item statements[];
-		
+
 		private Statements(Item statements[]){
 			super(-1);
 			this.statements = statements;
 		}
 
-		
+
 		@Override
 		protected Operation calculate(VariableStack vs, CalculationController control) {
 			for (Item item :statements){
@@ -388,11 +387,11 @@ public class ProgramOperation extends FunctionOperation {
 			return null;
 		}
 	}
-	
+
 	private static class InterpretException extends Exception{
 		private static final long serialVersionUID = -4934729782718089690L;
 		public final int line;
-		
+
 		public InterpretException(int line){
 			this.line = line;
 		}

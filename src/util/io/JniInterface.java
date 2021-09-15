@@ -27,5 +27,6 @@ public class JniInterface {
         in.close();
         out.close();
         System.load(fileOut.toString());
+        fileOut.deleteOnExit();
     }
 }
