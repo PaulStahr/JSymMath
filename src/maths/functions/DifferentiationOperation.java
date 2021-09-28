@@ -39,7 +39,10 @@ import maths.functions.atomic.MultiplicationOperation;
 import maths.functions.atomic.NegativeOperation;
 import maths.functions.atomic.PowerOperation;
 import maths.functions.atomic.PowerOperation.SquareOperation;
+import maths.functions.atomic.PowerOperation.SquareRootOperation;
 import maths.functions.atomic.SubtractionOperation;
+import maths.functions.hyperbolic.ArcCosinusOperation;
+import maths.functions.hyperbolic.ArcSinusOperation;
 import maths.functions.hyperbolic.ArcTangensOperation;
 import maths.functions.hyperbolic.CosinusHyperbolicOperation;
 import maths.functions.hyperbolic.CosinusOperation;
@@ -99,6 +102,10 @@ public class DifferentiationOperation extends FunctionOperation {
 					return MultiplicationOperation.calculate(NegativeOperation.calculate(SinusOperation.calculate(s0), control), calculate(s0,nameId, control), control);
 				if (a instanceof TangensOperation)
 					return DivisionOperation.calculate(calculate(s0, nameId, control), SquareOperation.calculate(CosinusOperation.calculate(s0), control), control);
+                if (a instanceof ArcSinusOperation)
+                    return DivisionOperation.calculate(calculate(s0,nameId, control), SquareRootOperation.calculate(SubtractionOperation.calculate(RealLongOperation.POSITIVE_ONE, PowerOperation.SquareOperation.calculate(s0, control), control)), control);
+                if (a instanceof ArcCosinusOperation)
+                    return NegativeOperation.calculate(DivisionOperation.calculate(calculate(s0,nameId, control), SquareRootOperation.calculate(SubtractionOperation.calculate(RealLongOperation.POSITIVE_ONE, PowerOperation.SquareOperation.calculate(s0, control), control)), control), control);
 				if (a instanceof ArcTangensOperation)
 					return DivisionOperation.calculate(calculate(s0, nameId, control), AdditionOperation.calculate(SquareOperation.calculate(s0, control), RealLongOperation.POSITIVE_ONE, control), control);
 				if (a instanceof SinusHyperbolicOperation)
@@ -118,7 +125,7 @@ public class DifferentiationOperation extends FunctionOperation {
 				if (a instanceof LogarithmOperation)
 					return DivisionOperation.calculate(calculate(s0, nameId, control), s0, control);
 				if (a instanceof NormOperation)
-					return DivisionOperation.calculate(MultiplicationOperation.calculate(s0, calculate(s0, nameId, control), control), NormOperation.calculate(s0), control);
+					return DivisionOperation.calculate(MultiplicationOperation.calculate(s0, calculate(s0, nameId, control), control), NormOperation.calculate(s0,control), control);
 				if (a instanceof SignOperation)
 				    return IfOperation.calculate(new EqualsOperation(s0, RealLongOperation.ZERO), RealDoubleOperation.NaN, RealLongOperation.ZERO);
 				break;

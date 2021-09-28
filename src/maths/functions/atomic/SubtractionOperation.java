@@ -155,7 +155,7 @@ public final class SubtractionOperation extends LinkingOperation
     }
 
 	@Override
-	public final int size() {return 3;}
+	public final int size() {return 2;}
 
 
 	@Override

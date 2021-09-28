@@ -16,6 +16,7 @@ import maths.OperationCompiler;
 import maths.data.BooleanOperation;
 import maths.data.RealDoubleOperation;
 import maths.data.RealLongOperation;
+import maths.data.RealRationalOperation;
 import maths.exception.OperationParseException;
 import maths.functions.AbsoluteOperation;
 import maths.functions.DifferentiationOperation;
@@ -52,8 +53,10 @@ public class DifferentiationTest {
     public static List<TestInstance> params() {
         return Arrays.asList(
                 new TestInstance("x", RealLongOperation.ZERO),
+                new TestInstance("4-x", RealLongOperation.ZERO),
                 new TestInstance("x*x", RealLongOperation.ZERO),
                 new TestInstance("x^x", RealLongOperation.POSITIVE_TWO),
+                new TestInstance("sqrt(x)", RealLongOperation.POSITIVE_ONE),
                 new TestInstance("sign(x)", RealLongOperation.POSITIVE_TWO),
                 new TestInstance("sign(x)", RealLongOperation.NEGATIVE_ONE),
                 new TestInstance("abs(x)", RealLongOperation.POSITIVE_TWO),
@@ -63,6 +66,9 @@ public class DifferentiationTest {
                 new TestInstance("sin(x)", RealLongOperation.POSITIVE_TWO),
                 new TestInstance("cos(x)", RealLongOperation.POSITIVE_TWO),
                 new TestInstance("tan(x)", RealLongOperation.POSITIVE_TWO),
+                new TestInstance("asin(x)", RealRationalOperation.POSITIVE_HALF),
+                new TestInstance("acos(x)", RealRationalOperation.POSITIVE_HALF),
+                new TestInstance("atan(x)", RealRationalOperation.POSITIVE_HALF),
                 new TestInstance("sinh(x)", RealLongOperation.POSITIVE_TWO),
                 new TestInstance("cosh(x)", RealLongOperation.POSITIVE_TWO),
                 new TestInstance("tanh(x)", RealLongOperation.POSITIVE_TWO));
@@ -80,7 +86,6 @@ public class DifferentiationTest {
         Operation exact = DifferentiationOperation.calculate(op, new UserVariableOperation(v.nameObject), control);
         v.setValue(value);
         exact = exact.calculate(vs, control);
-
 
         Operation delta = new RealDoubleOperation(0.0001);
         v.setValue(AdditionOperation.calculate(value, delta, control));
