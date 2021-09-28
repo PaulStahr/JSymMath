@@ -1,6 +1,6 @@
 # JSymMath
 
-[![](https://jitpack.io/v/PaulStahr/JSymMath.svg)](https://jitpack.io/#PaulStahr/JSymMath)
+![Gradle](https://github.com/PaulStahr/JSymMath/actions/workflows/gradle.yml/badge.svg) [![](https://jitpack.io/v/PaulStahr/JSymMath.svg)](https://jitpack.io/#PaulStahr/JSymMath)
 
 Basic Symbolic calculations in Java.
 
