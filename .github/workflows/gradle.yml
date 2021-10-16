@@ -21,6 +21,8 @@ jobs:
       with:
         java-version: '11'
         distribution: 'adopt'
+    - name: LocateJNI
+      run: sudo updatedb; locate jni.h
     - name: Armadillo
       run: sudo apt-get update; sudo apt-get install libarmadillo9 libarmadillo-dev -y
     - name: NativeLibs
