@@ -22,7 +22,9 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
     - name: Armadillo
-      run: sudo apt-get update; sudo apt-get install libarmadillo9 -y
+      run: sudo apt-get update; sudo apt-get install libarmadillo9 libarmadillo-dev -y
+    - name: NativeLibs
+      run: cd src/cpp/; make all -j
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
