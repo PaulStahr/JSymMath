@@ -69,15 +69,12 @@ public final class NotOperation extends Operation
         return new NotOperation(a);
     }
 
-
 	@Override
 	public final Operation calculate (VariableAmount object, CalculationController control){
         return calculate (a.calculate(object, control));
     }
 	@Override
-	public final int size() {
-		return 1;
-	}
+	public final int size() {return 1;}
 
 
 	@Override
@@ -103,7 +100,5 @@ public final class NotOperation extends Operation
 
 
 	@Override
-	public Operation getInstance(List<Operation> subclasses) {
-		return new NotOperation(subclasses.get(0));
-	}
+	public Operation getInstance(List<Operation> subclasses) {return new NotOperation(subclasses.get(0));}
 }

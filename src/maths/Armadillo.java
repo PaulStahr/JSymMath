@@ -18,14 +18,16 @@ public class Armadillo {
 		    File path = new File("src/resources/armadillo_java.so");
 			if (path.exists())
 			{
-			    System.out.println("Load directly");
-				System.load(path.getAbsolutePath());
+                String absolutePath = path.getAbsolutePath();
+			    System.out.println("Load directly from " + absolutePath);
+				System.load(absolutePath);
 			}
 			else
 			{
                 System.out.println("Load indirectly");
 				JniInterface.loadLib("armadillo_java.so");
 			}
+	        System.out.println("Successfully loaded native lib");
 		}catch(UnsatisfiedLinkError | NullPointerException | IOException e)
 		{
 			System.err.println("Can't load armadillo " +  e + ' ' + e.getStackTrace()[0]);

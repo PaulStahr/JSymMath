@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,7 +32,7 @@ import util.Buffers;
 public class IntegerArrayList extends AbstractList<Integer> implements IntegerList{
 	private int data[];
 	private int length;
-	
+
 	public IntegerArrayList(){this(5);}
 
 	public IntegerArrayList(int initialElements){data = new int[initialElements];}
@@ -42,7 +42,7 @@ public class IntegerArrayList extends AbstractList<Integer> implements IntegerLi
 		if (!stringList.equals("")) {
 			String[] SplitString = stringList.split(",");
 			for (String str : SplitString) {
-				add(Integer.valueOf(str));
+			    add(Integer.valueOf(str));
 			}
 		}
 
@@ -57,7 +57,7 @@ public class IntegerArrayList extends AbstractList<Integer> implements IntegerLi
 		data[index] = value;
 		++length;
 	}
-	
+
 	public int removeI(int index)
 	{
 		int tmp = data[index];
@@ -74,11 +74,7 @@ public class IntegerArrayList extends AbstractList<Integer> implements IntegerLi
 	@Override
 	public void add(int index, Integer value){add(index, (int)value);}
 
-	public int pop(){
-		int last = data[length - 1];
-		--length;
-		return last;
-	}
+	public int pop(){return data[--length];}
 
 	@Override
 	public Integer set(int index, Integer value){return set(index, (int)value);}
@@ -88,7 +84,7 @@ public class IntegerArrayList extends AbstractList<Integer> implements IntegerLi
 		else                                  {System.arraycopy(list.data, 0, this.data, 0, list.length);}
 		this.length = list.length;
 	}
-	
+
 	public int set(int index, int value){
 		int old = data[index];
 		data[index] = value;
@@ -122,7 +118,7 @@ public class IntegerArrayList extends AbstractList<Integer> implements IntegerLi
 		System.arraycopy(data, begin, this.data, length, end - begin);
 		length += end - begin;
 	}
-	
+
 	public void add(int value0, int value1, int value2)
 	{
 		if (length + 3 > data.length){data = Arrays.copyOf(data, Math.max(length + 3, data.length * 2));}
@@ -130,14 +126,14 @@ public class IntegerArrayList extends AbstractList<Integer> implements IntegerLi
 		data[length++] = value1;
 		data[length++] = value2;
 	}
-	
+
 	@Override
 	public Integer get(int index) {
 		if (index >= length)
 			throw new ArrayIndexOutOfBoundsException(index);
 		return data[index];
 	}
-	
+
 	@Override
 	public int getI(int index){
 		if (index >= length)
@@ -185,7 +181,7 @@ public class IntegerArrayList extends AbstractList<Integer> implements IntegerLi
 				throw new ArrayIndexOutOfBoundsException(index);
 			return data[index];
 		}
-		
+
 		@Override
 		public int getI(int index){
 			if (index >= length)
@@ -195,7 +191,7 @@ public class IntegerArrayList extends AbstractList<Integer> implements IntegerLi
 
 		@Override
 		public int size() {return length;}
-		
+
 		@Override
 		public final void setElem(int index, int elem){throw new RuntimeException();}
 

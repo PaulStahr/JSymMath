@@ -31,6 +31,9 @@ import maths.variable.VariableStack;
 
 @RunWith(Parameterized.class)
 public class DifferentiationTest {
+    private static final Operation delta = new RealDoubleOperation(0.0001);
+    private static final Operation MAX_ERROR = new RealDoubleOperation(0.01);
+
     private static class TestInstance
     {
         String op;
@@ -52,27 +55,29 @@ public class DifferentiationTest {
     @Parameters
     public static List<TestInstance> params() {
         return Arrays.asList(
-                new TestInstance("x", RealLongOperation.ZERO),
-                new TestInstance("4-x", RealLongOperation.ZERO),
-                new TestInstance("x*x", RealLongOperation.ZERO),
-                new TestInstance("x^x", RealLongOperation.POSITIVE_TWO),
-                new TestInstance("sqrt(x)", RealLongOperation.POSITIVE_ONE),
-                new TestInstance("sign(x)", RealLongOperation.POSITIVE_TWO),
-                new TestInstance("sign(x)", RealLongOperation.NEGATIVE_ONE),
-                new TestInstance("abs(x)", RealLongOperation.POSITIVE_TWO),
-                new TestInstance("abs(x)", RealLongOperation.NEGATIVE_ONE),
-                new TestInstance("1/x", RealLongOperation.POSITIVE_TWO),
-                new TestInstance("log(x)", RealLongOperation.POSITIVE_TWO),
-                new TestInstance("sin(x)", RealLongOperation.POSITIVE_TWO),
-                new TestInstance("cos(x)", RealLongOperation.POSITIVE_TWO),
-                new TestInstance("tan(x)", RealLongOperation.POSITIVE_TWO),
-                new TestInstance("asin(x)", RealRationalOperation.POSITIVE_HALF),
-                new TestInstance("acos(x)", RealRationalOperation.POSITIVE_HALF),
-                new TestInstance("atan(x)", RealRationalOperation.POSITIVE_HALF),
-                new TestInstance("sinh(x)", RealLongOperation.POSITIVE_TWO),
-                new TestInstance("cosh(x)", RealLongOperation.POSITIVE_TWO),
-                new TestInstance("tanh(x)", RealLongOperation.POSITIVE_TWO));
-            }
+        new TestInstance("x", RealLongOperation.ZERO),
+        new TestInstance("4-x", RealLongOperation.ZERO),
+        new TestInstance("x*x", RealLongOperation.ZERO),
+        new TestInstance("x*x", RealLongOperation.POSITIVE_TWO),
+        new TestInstance("x*x", RealLongOperation.NEGATIVE_ONE),
+        new TestInstance("x^x", RealLongOperation.POSITIVE_TWO),
+        new TestInstance("sqrt(x)", RealLongOperation.POSITIVE_ONE),
+        new TestInstance("sign(x)", RealLongOperation.POSITIVE_TWO),
+        new TestInstance("sign(x)", RealLongOperation.NEGATIVE_ONE),
+        new TestInstance("abs(x)", RealLongOperation.POSITIVE_TWO),
+        new TestInstance("abs(x)", RealLongOperation.NEGATIVE_ONE),
+        new TestInstance("1/x", RealLongOperation.POSITIVE_TWO),
+        new TestInstance("log(x)", RealLongOperation.POSITIVE_TWO),
+        new TestInstance("sin(x)", RealLongOperation.POSITIVE_TWO),
+        new TestInstance("cos(x)", RealLongOperation.POSITIVE_TWO),
+        new TestInstance("tan(x)", RealLongOperation.POSITIVE_TWO),
+        new TestInstance("asin(x)", RealRationalOperation.POSITIVE_HALF),
+        new TestInstance("acos(x)", RealRationalOperation.POSITIVE_HALF),
+        new TestInstance("atan(x)", RealRationalOperation.POSITIVE_HALF),
+        new TestInstance("sinh(x)", RealLongOperation.POSITIVE_TWO),
+        new TestInstance("cosh(x)", RealLongOperation.POSITIVE_TWO),
+        new TestInstance("tanh(x)", RealLongOperation.POSITIVE_TWO));
+    }
 
     @Test
     public void testNumeric() throws OperationParseException {
@@ -87,14 +92,13 @@ public class DifferentiationTest {
         v.setValue(value);
         exact = exact.calculate(vs, control);
 
-        Operation delta = new RealDoubleOperation(0.0001);
         v.setValue(AdditionOperation.calculate(value, delta, control));
         Operation rhs = op.calculate(vs, control);
         v.setValue(SubtractionOperation.calculate(value, delta, control));
         Operation lhs = op.calculate(vs, control);
         Operation approximated = DivisionOperation.calculate(SubtractionOperation.calculate(lhs, rhs, control), MultiplicationOperation.calculate(delta, RealLongOperation.POSITIVE_TWO, control), control);
 
-        assertEquals(approximated.toString(exact.toString(new StringBuilder("Error gap to large: ").append('|')).append('-')).append('|').append('<').append(0.01).toString(), BooleanOperation.TRUE, LowerOperation.calculate(AbsoluteOperation.calculate(SubtractionOperation.calculate(exact, approximated, control)), new RealDoubleOperation(0.01)));
+        assertEquals(approximated.toString(exact.toString(new StringBuilder("Error gap to large: ").append('|')).append('-')).append('|').append('<').append(0.01).toString(), BooleanOperation.TRUE, LowerOperation.calculate(AbsoluteOperation.calculate(SubtractionOperation.calculate(exact, approximated, control)), MAX_ERROR));
     }
 }
 

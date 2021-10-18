@@ -131,18 +131,10 @@ public class GeometryTest {
         {
             v.set(vertexPositions, i);
             float smoothed = Interpolator.interpolatePoint(v.x, v.y, v.z, data, width, height, depth);
-            try {
-                assert(Math.abs(smoothed) < 0.05);
-            }catch (AssertionError e){
-                throw new AssertionError("Assert failed, smoothed " + smoothed + " should be 0", e);
-            }
+            assertEquals(smoothed, 0, 0.05);
             double dist = Math.sqrt(v.distanceQ(4.5, 4.5, 4.5));
-            try {
-                assert(Math.abs(dist - expectedDist) < 0.05);
-            }catch (AssertionError e){
-                throw new AssertionError("Assert failed, distance of " + v + " is " + dist + " should be " + expectedDist, e);
-            }
-        }
+            assertEquals(dist, expectedDist, 0.05);
+       }
     }
 
     @Test
