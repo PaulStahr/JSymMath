@@ -350,14 +350,6 @@ public final class Matrix4d implements Matrixd, DoubleList{
 		mat[0][3] = m30; mat[1][3] = m31; mat[2][3] = m32; mat[3][3] = m33;
 	}
 
-	public final void rdotAffine(Vector3f v)	{rdotAffine(v.x, v.y, v.z, v);}
-
-	public final void rdotAffine(double x, double y, double z, Vector3f v){
-		v.x = (float)(m00 * x + m10 * y + m20 * z + m30);
-		v.y = (float)(m01 * x + m11 * y + m21 * z + m31);
-		v.z = (float)(m02 * x + m12 * y + m22 * z + m32);
-	}
-
 	public final double ldotX(double x, double y, double z, double w){return m00 * x + m10 * y + m20 * z + m30 * w;}
 	public final double ldotY(double x, double y, double z, double w){return m01 * x + m11 * y + m21 * z + m31 * w;}
 	public final double ldotZ(double x, double y, double z, double w){return m02 * x + m12 * y + m22 * z + m32 * w;}
@@ -419,7 +411,7 @@ public final class Matrix4d implements Matrixd, DoubleList{
 		m20 *= z; m21 *= z; m22 *= z; m23 *= z;
 	}
 
-	public final void rdot(Vector4d vector){
+	public final void ldot(Vector4d vector){
 		final double x = vector.x, y = vector.y, z = vector.z, w = vector.w;
 		vector.x = m00 * x + m10 * y + m20 * z + m30 * w;
 		vector.y = m01 * x + m11 * y + m21 * z + m31 * w;
@@ -427,7 +419,7 @@ public final class Matrix4d implements Matrixd, DoubleList{
 		vector.w = m03 * x + m13 * y + m23 * z + m33 * w;
 	}
 
-	public final void ldot(Vector4d vector){
+	public final void rdot(Vector4d vector){
 		final double x = vector.x, y = vector.y, z = vector.z, w = vector.w;
 		vector.x = m00 * x + m01 * y + m02 * z + m03 * w;
 		vector.y = m10 * x + m11 * y + m12 * z + m13 * w;
@@ -555,6 +547,14 @@ public final class Matrix4d implements Matrixd, DoubleList{
 		out[++index] = m10 * x + m11 * y + m12 * z + m13;
 		out[++index] = m20 * x + m21 * y + m22 * z + m23;
 	}
+
+    public final void rdotAffine(Vector3f v)    {rdotAffine(v.x, v.y, v.z, v);}
+
+    public final void rdotAffine(double x, double y, double z, Vector3f v){
+        v.x = (float)(m00 * x + m01 * y + m20 * z + m03);
+        v.y = (float)(m10 * x + m11 * y + m21 * z + m13);
+        v.z = (float)(m20 * x + m21 * y + m22 * z + m23);
+    }
 
 	public final void rdotAffine(double x, double y, double z, DoubleList out, int index){
 		out.setElem(index++,m00 * x + m01 * y + m02 * z + m03);

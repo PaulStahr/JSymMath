@@ -649,6 +649,17 @@ public class ArrayUtil {
         return result;
     }
 
+    public static float qdist(float[] l0, int begin0, float[] l1, int begin1, int size) {
+        float result = 0;
+        while (size != 0)
+        {
+            float diff = l0[begin0++] - l1[begin1++];
+            result += diff * diff;
+            --size;
+        }
+        return result;
+    }
+
 	public static void arraycopy(float[] source, int inputBegin, double[] dest, int outputBegin, int size) {
 		if (inputBegin + size > source.length) {throw new ArrayIndexOutOfBoundsException("Index " + size + inputBegin + " out of bounds for length " + source.length);}
 		if (outputBegin + size > dest.length)	{throw new ArrayIndexOutOfBoundsException("Index " + size + outputBegin + " out of bounds for length " + dest.length);}
@@ -760,5 +771,11 @@ public class ArrayUtil {
         {
             output[oBegin] += input[iBegin];
         }
+    }
+
+    public static float sum(float[] data, int begin, int end) {
+        float result = 0;
+        for (;begin < end; ++begin){result += data[begin];}
+        return result;
     }
 }
