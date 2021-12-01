@@ -303,4 +303,18 @@ public abstract class Buffers
 		return strB.toString();
 	}
 
+    public static final String toString(FloatBuffer b) {
+        StringBuilder strB = new StringBuilder(b.limit() * 2 + 2);
+        strB.append('[');
+        for (int i = 0; i < b.limit(); ++i)
+        {
+            if (i != 0)
+            {
+                strB.append(',');
+            }
+            strB.append(b.get(i));
+        }
+        strB.append(']');
+        return strB.toString();
+    }
 }
