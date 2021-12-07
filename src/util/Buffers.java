@@ -65,8 +65,8 @@ public abstract class Buffers
         FloatBuffer res[] = new FloatBuffer[count];
         for (int i = 0; i < count; ++i)
         {
-            ((java.nio.Buffer) bb).position((i * elements) << 2);
-        	bb.limit(((i + 1) * elements) << 2);
+            ((java.nio.Buffer)bb).position((i * elements) << 2);
+            ((java.nio.Buffer)bb).limit(((i + 1) * elements) << 2);
         	res[i] = bb.asFloatBuffer();
         }
         return res;
