@@ -57,17 +57,21 @@ public abstract class Buffers
     }
 
     /**
-     * Erzeugt einen direkten Float Buffer
-     * @param elements die Anzahl der Float Elemte
+     * Creates a set of direct FloatBuffers
+     * @param elements number of elements for each buffer
+     * @param count number of elements overall
      */
     public static final FloatBuffer[] createFloatBuffer(int elements, int count){
-        ByteBuffer bb =  ByteBuffer.allocateDirect((elements * count)<<2).order(ByteOrder.nativeOrder());
-        FloatBuffer res[] = new FloatBuffer[count];
-        for (int i = 0; i < count; ++i)
+        return createFloatBuffer(elements, new FloatBuffer[count]);
+    }
+
+    public static final FloatBuffer[] createFloatBuffer(int elements, FloatBuffer res[]){
+        ByteBuffer bb =  ByteBuffer.allocateDirect((elements * res.length)<<2).order(ByteOrder.nativeOrder());
+        for (int i = 0; i < res.length; ++i)
         {
             ((java.nio.Buffer)bb).position((i * elements) << 2);
             ((java.nio.Buffer)bb).limit(((i + 1) * elements) << 2);
-        	res[i] = bb.asFloatBuffer();
+            res[i] = bb.asFloatBuffer();
         }
         return res;
     }

@@ -18,7 +18,7 @@ public class IOUtil {
 		BufferedReader inBuf = new BufferedReader(reader);
 		final DoubleArrayList ial = new DoubleArrayList();
 		String line;
-		ArrayList<String> al = new ArrayList<String>();
+		ArrayList<String> al = new ArrayList<>();
 		char seperators[] = new char[] {' ','\t',','};
 		while ((line = inBuf.readLine()) != null)
 		{
@@ -28,7 +28,7 @@ public class IOUtil {
 			}
 			try
 			{
-				StringUtils.parseDoubles(line, 0, line.length(), al, ial, seperators);		
+				StringUtils.parseDoubles(line, 0, line.length(), al, ial, seperators);
 			}catch (NumberFormatException e1) {
 				inBuf.close();
 				reader.close();
@@ -39,9 +39,9 @@ public class IOUtil {
 		reader.close();
 		return ial;
 	}
-	
 
-	
+
+
 	public static final void writeColumnTable(String rownames[], Object []columns, BufferedWriter outBuf) throws IOException
 	{
 		StringBuilder strB = new StringBuilder();
@@ -59,43 +59,16 @@ public class IOUtil {
 				Object current = columns[j];
 				try
 				{
-					if (current instanceof double[])
-					{
-						strB.append(((double[])current)[i]);
-					}
-					else if (current instanceof float[])
-					{
-						strB.append(((float[])current)[i]);
-					}
-					else if (current instanceof int[])
-					{
-						strB.append(((int[])current)[i]);
-					}
-					else if (current instanceof long[])
-					{
-						strB.append(((long[])current)[i]);
-					}
-					else if (current instanceof short[])
-					{
-						strB.append(((short[])current)[i]);
-					}
-					else if (current instanceof byte[])
-					{
-						strB.append(((byte[])current)[i]);					
-					}
-					else if (current instanceof boolean[])
-					{
-						strB.append(((boolean[])current)[i]);					
-					}
-					else if (current instanceof Object[])
-					{
-						strB.append(((Object[])current)[i]);					
-					}
+					if (current instanceof double[])       {strB.append(((double[])current)[i]);}
+					else if (current instanceof float[])   {strB.append(((float[])current)[i]);}
+					else if (current instanceof int[])     {strB.append(((int[])current)[i]);}
+					else if (current instanceof long[])    {strB.append(((long[])current)[i]);}
+					else if (current instanceof short[])   {strB.append(((short[])current)[i]);}
+					else if (current instanceof byte[])    {strB.append(((byte[])current)[i]);}
+					else if (current instanceof boolean[]) {strB.append(((boolean[])current)[i]);}
+					else if (current instanceof Object[])  {strB.append(((Object[])current)[i]);}
 					strB.append(' ');
-				}catch (ArrayIndexOutOfBoundsException e)
-				{
-					return;
-				}
+				}catch (ArrayIndexOutOfBoundsException e){return;}
 			}
 			outBuf.newLine();
 			chBuf = StringUtils.writeAndReset(outBuf, strB, chBuf);
