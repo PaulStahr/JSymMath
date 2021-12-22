@@ -1072,7 +1072,7 @@ public class Geometry {
     	return result;
     }
 
-    public static final void getOrthorgonalZMatrix(Vector3d in, Matrixd out) {
+    public static final void getOrthorgonalZMatrix(Vector3d in, Matrixd<?> out) {
     	double dirlength = Math.sqrt(in.dot());
     	double qx = in.x * in.x;
 		double qy = in.y * in.y;

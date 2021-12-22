@@ -25,7 +25,7 @@ import maths.algorithm.Calculate;
 import util.data.DoubleArrayList;
 import util.data.DoubleList;
 
-public final class Matrix4d implements Matrixd, DoubleList{
+public final class Matrix4d implements Matrixd<Matrix4d>{
 	public double m00, m01, m02, m03;
 	public double m10, m11, m12, m13;
 	public double m20, m21, m22, m23;
@@ -74,7 +74,7 @@ public final class Matrix4d implements Matrixd, DoubleList{
 	}
 
 	@Override
-	public void set(Matrixd o) {
+	public void set(Matrixd<?> o) {
 		if (o instanceof Matrix4d)
 		{
 			set((Matrix4d) o);
@@ -651,7 +651,8 @@ public final class Matrix4d implements Matrixd, DoubleList{
 		}
 	}
 
-	public final void dotl(Matrix4d lhs)
+	@Override
+    public final void dotl(Matrix4d lhs)
 	{
 		double x = lhs.m00 * m00 + lhs.m01 * m10 + lhs.m02 * m20 + lhs.m03 * m30;
 		double y = lhs.m10 * m00 + lhs.m11 * m10 + lhs.m12 * m20 + lhs.m13 * m30;
@@ -675,7 +676,8 @@ public final class Matrix4d implements Matrixd, DoubleList{
                             m03 = x;       m13 = y;       m23 = z;       m33 = w;
 	}
 
-	public final void dotr(Matrix4d rhs)
+	@Override
+    public final void dotr(Matrix4d rhs)
 	{
 		double v0 = m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20 + m03 * rhs.m30;
 		double v1 = m00 * rhs.m01 + m01 * rhs.m11 + m02 * rhs.m21 + m03 * rhs.m31;
@@ -699,7 +701,8 @@ public final class Matrix4d implements Matrixd, DoubleList{
                     m30 = v0;      m31 = v1;      m32 = v2;      m33 = v3;
 	}
 
-	public final void dot(Matrix4d lhs, Matrix4d rhs) {
+	@Override
+    public final void dot(Matrix4d lhs, Matrix4d rhs) {
 		if (lhs == this){dotl(rhs);return;}
 		if (rhs == this){dotr(lhs);return;}
 		m00 = lhs.m00 * rhs.m00 + lhs.m01 * rhs.m10 + lhs.m02 * rhs.m20 + lhs.m03 * rhs.m30;
@@ -718,5 +721,10 @@ public final class Matrix4d implements Matrixd, DoubleList{
 		m31 = lhs.m30 * rhs.m01 + lhs.m31 * rhs.m11 + lhs.m32 * rhs.m21 + lhs.m33 * rhs.m31;
 		m32 = lhs.m30 * rhs.m02 + lhs.m31 * rhs.m12 + lhs.m32 * rhs.m22 + lhs.m33 * rhs.m32;
 		m33 = lhs.m30 * rhs.m03 + lhs.m31 * rhs.m13 + lhs.m32 * rhs.m23 + lhs.m33 * rhs.m33;
+	}
+
+	@Override
+    public Matrix4d clone() {
+        return new Matrix4d(this);
 	}
 }
