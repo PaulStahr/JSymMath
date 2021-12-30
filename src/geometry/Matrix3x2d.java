@@ -49,7 +49,7 @@ public final class Matrix3x2d implements Matrixd<Matrix3x2d>, DoubleList{
         this.m10 = mat.m10;this.m11 = mat.m11;this.m12 = mat.m12;
     }
 
-    public final void set(double x0, double x1, double x2, double x3, double y0, double y1, double y2, double y3, double z0, double z1, double z2, double z3){
+    public final void set(double x0, double x1, double x2, double y0, double y1, double y2){
         this.m00 = x0;this.m01 = x1;this.m02 = x2;
         this.m10 = y0;this.m11 = y1;this.m12 = y2;
     }

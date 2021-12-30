@@ -42,10 +42,9 @@ public class IntegerArrayList extends AbstractList<Integer> implements IntegerLi
 		if (!stringList.equals("")) {
 			String[] SplitString = stringList.split(",");
 			for (String str : SplitString) {
-			    add(Integer.valueOf(str));
-			}
+                add(Integer.valueOf(str));
+            }
 		}
-
 	}
 
 	public void add(int index, int value)
@@ -114,9 +113,9 @@ public class IntegerArrayList extends AbstractList<Integer> implements IntegerLi
 
 	public void add(int data[], int begin, int end)
 	{
-		enlargeTo(length + end - begin);
-		System.arraycopy(data, begin, this.data, length, end - begin);
-		length += end - begin;
+		enlargeTo(length + (end -= begin));
+		System.arraycopy(data, begin, this.data, length, end);
+		length += end;
 	}
 
 	public void add(int value0, int value1, int value2)

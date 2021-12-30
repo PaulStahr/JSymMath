@@ -402,7 +402,8 @@ public class Matrix3d implements Matrixd<Matrix3d>, DoubleList{
        throw new ArrayIndexOutOfBoundsException(i);
    }
 
-   public final void dotl(Matrix3d lhs)
+   @Override
+public final void dotl(Matrix3d lhs)
    {
        double x = lhs.m00 * m00 + lhs.m01 * m10 + lhs.m02 * m20;
        double y = lhs.m10 * m00 + lhs.m11 * m10 + lhs.m12 * m20;
@@ -418,7 +419,8 @@ public class Matrix3d implements Matrixd<Matrix3d>, DoubleList{
             m02 = x;       m12 = y;       m22 = z;
    }
 
-   public final void dotr(Matrix3d rhs)
+   @Override
+public final void dotr(Matrix3d rhs)
    {
        double v0 = m00 * rhs.m00 + m01 * rhs.m10 + m02 * rhs.m20;
        double v1 = m00 * rhs.m01 + m01 * rhs.m11 + m02 * rhs.m21;
@@ -470,7 +472,7 @@ public final void dot(Matrix3d lhs, Matrix3d rhs) {
 }
 
    @Override
-public Matrix3d clone() {
+   public Matrix3d clone() {
        return new Matrix3d(this);
    }
 }
