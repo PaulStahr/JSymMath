@@ -15,7 +15,6 @@ import geometry.Vector3d;
 import geometry.Vector4d;
 import maths.Operation;
 import maths.algorithm.OperationCalculate;
-import maths.variable.VariableAmount;
 import maths.data.ArrayOperation;
 import maths.data.BooleanOperation;
 import maths.data.CharacterOperation;
@@ -23,6 +22,7 @@ import maths.data.RealDoubleOperation;
 import maths.data.RealLongOperation;
 import maths.data.StringOperation;
 import maths.exception.ExceptionOperation;
+import maths.variable.VariableAmount;
 import util.ArrayTools;
 import util.StringUtils;
 import util.data.DoubleList;
@@ -38,7 +38,7 @@ public class CallProgramFunction extends FunctionOperation{
 	private final Object obj;
 	private final Class<?> cl;
 	private final Method m[];
-	
+
 	public CallProgramFunction(Operation a, Operation b, Operation c, Operation d){
     	if ((this.a = a) == null || ((this.b = b) == null) || (this.c = c) == null || (this.d = d) == null)
     		throw new NullPointerException();
@@ -47,7 +47,7 @@ public class CallProgramFunction extends FunctionOperation{
     	this.obj = null;
     	this.cl = null;
 	}
-	
+
 	public CallProgramFunction(Operation a, Operation b, Operation c, Operation d, boolean nameChecked, Class<?> cl, Object obj, Method m[]){
     	if ((this.a = a) == null || ((this.b = b) == null) || (this.c = c) == null || (this.d = d) == null)
     		throw new NullPointerException();
@@ -56,7 +56,7 @@ public class CallProgramFunction extends FunctionOperation{
     	this.obj = obj;
     	this.m = m;
 	}
-	
+
 	@Override
 	public String getFunctionName() {
 		return "java";
@@ -64,9 +64,9 @@ public class CallProgramFunction extends FunctionOperation{
 
 	@Override
 	public Operation getInstance(List<Operation> subclasses) {
-		return new CallProgramFunction(subclasses.get(0), subclasses.get(1), subclasses.get(2), subclasses.get(3)); 
+		return new CallProgramFunction(subclasses.get(0), subclasses.get(1), subclasses.get(2), subclasses.get(3));
 	}
-	
+
 	public static final Operation calculate(Operation a, Operation b, Operation c, Operation d, boolean nameChecked, Class<?> cl, Object obj, Method m[])
 	{
 		if (a.isString() && cl == null && m == null)
@@ -80,7 +80,7 @@ public class CallProgramFunction extends FunctionOperation{
 		if (b.isString() && cl != null && m == null)
 		{
 			if (b.stringValue().equals(""))
-			{	
+			{
 				m = cl.getMethods();
 			}
 			else
@@ -128,7 +128,7 @@ public class CallProgramFunction extends FunctionOperation{
 		{
 			return new CallProgramFunction(a, b, c, d, nameChecked, cl, obj, m);
 		}
-		
+
 		Object arguments[] = UniqueObjects.EMPTY_OJECT_ARRAY;
 		if (d.size() != 0)
 		{
@@ -157,74 +157,47 @@ public class CallProgramFunction extends FunctionOperation{
 					}
 					else if (type == long.class || type == Long.class)
 					{
-						if (!sub.isIntegral())
-						{
-							break checkMethod;
-						}
-						arguments[i] = sub.longValue();						
+						if (!sub.isIntegral()){break checkMethod;}
+						arguments[i] = sub.longValue();
 					}
 					else if (type == float.class || type == Float.class)
 					{
-						if (!sub.isRealFloatingNumber())
-						{
-							break checkMethod;
-						}
-						arguments[i] = (float)sub.doubleValue();						
+						if (!sub.isRealFloatingNumber()){break checkMethod;}
+						arguments[i] = (float)sub.doubleValue();
 					}
 					else if (types[i] == double.class || types[i] == Double.class)
 					{
-						if (!sub.isRealFloatingNumber())
-						{
-							break checkMethod;
-						}
-						arguments[i] = sub.doubleValue();						
+						if (!sub.isRealFloatingNumber()){break checkMethod;}
+						arguments[i] = sub.doubleValue();
 					}
 					else if (type == boolean.class || type == Boolean.class)
 					{
-						if (!sub.isBoolean())
-						{
-							break checkMethod;
-						}
-						arguments[i] = sub.booleanValue();						
-					}	
+						if (!sub.isBoolean()){break checkMethod;}
+						arguments[i] = sub.booleanValue();
+					}
 					else if (type == String.class)
 					{
-						if (!sub.isString())
-						{
-							break checkMethod;
-						}
-						arguments[i] = sub.stringValue();						
+						if (!sub.isString()){break checkMethod;}
+						arguments[i] = sub.stringValue();
 					}
 					else if (type == Vector2d.class)
 					{
-						if (!(sub.isArray() && sub.isPrimitive() && sub.size() == 2))
-						{
-							break checkMethod;
-						}
+						if (!(sub.isArray() && sub.isPrimitive() && sub.size() == 2)){break checkMethod;}
 						arguments[i] = new Vector2d(sub.get(0).doubleValue(), sub.get(1).doubleValue());
 					}
 					else if (type == Vector3d.class)
 					{
-						if (!(sub.isArray() && sub.isPrimitive() && sub.size() == 3))
-						{
-							break checkMethod;
-						}
+						if (!(sub.isArray() && sub.isPrimitive() && sub.size() == 3)){break checkMethod;}
 						arguments[i] = new Vector3d(sub.get(0).doubleValue(),sub.get(1).doubleValue(),sub.get(2).doubleValue());
 					}
 					else if (type == Vector4d.class)
 					{
-						if (!(sub.isArray() && sub.isPrimitive() && sub.size() == 4))
-						{
-							break checkMethod;
-						}
+						if (!(sub.isArray() && sub.isPrimitive() && sub.size() == 4)){break checkMethod;}
 						arguments[i] = new Vector4d(sub.get(0).doubleValue(),sub.get(1).doubleValue(),sub.get(2).doubleValue(), sub.get(3).doubleValue());
 					}
 					else if (type == boolean[].class)
 					{
-						if (!(sub.isArray() && sub.isPrimitive()))
-						{
-							break checkMethod;
-						}
+						if (!(sub.isArray() && sub.isPrimitive())){break checkMethod;}
 						boolean data[] = new boolean[sub.size()];
 						for (int j = 0; j < data.length; ++j)
 						{
@@ -234,10 +207,7 @@ public class CallProgramFunction extends FunctionOperation{
 					}
 					else if (type == int[].class)
 					{
-						if (!(sub.isArray() && sub.isPrimitive()))
-						{
-							break checkMethod;
-						}
+						if (!(sub.isArray() && sub.isPrimitive())){break checkMethod;}
 						int data[] = new int[sub.size()];
 						for (int j = 0; j < data.length; ++j)
 						{
@@ -247,10 +217,7 @@ public class CallProgramFunction extends FunctionOperation{
 					}
 					else if (type == byte[].class)
 					{
-						if (!(sub.isArray() && sub.isPrimitive()))
-						{
-							break checkMethod;
-						}
+						if (!(sub.isArray() && sub.isPrimitive())){break checkMethod;}
 						byte data[] = new byte[sub.size()];
 						for (int j = 0; j < data.length; ++j)
 						{
@@ -260,10 +227,7 @@ public class CallProgramFunction extends FunctionOperation{
 					}
 					else if (type == double[].class)
 					{
-						if (!(sub.isArray() && sub.isPrimitive()))
-						{
-							break checkMethod;
-						}
+						if (!(sub.isArray() && sub.isPrimitive())){break checkMethod;}
 						double data[] = new double[sub.size()];
 						for (int j = 0; j < data.length; ++j)
 						{
@@ -273,10 +237,7 @@ public class CallProgramFunction extends FunctionOperation{
 					}
 					else if (type == float[].class)
 					{
-						if (!(sub.isArray() && sub.isPrimitive()))
-						{
-							break checkMethod;
-						}
+						if (!(sub.isArray() && sub.isPrimitive())){break checkMethod;}
 						float data[] = new float[sub.size()];
 						for (int j = 0; j < data.length; ++j)
 						{
@@ -286,10 +247,7 @@ public class CallProgramFunction extends FunctionOperation{
 					}
 					else if (type == long[].class)
 					{
-						if (!(sub.isArray() && sub.isPrimitive()))
-						{
-							break checkMethod;
-						}
+						if (!(sub.isArray() && sub.isPrimitive())){break checkMethod;}
 						long data[] = new long[sub.size()];
 						for (int j = 0; j < data.length; ++j)
 						{
@@ -299,10 +257,7 @@ public class CallProgramFunction extends FunctionOperation{
 					}
 					else if (type == String[].class)
 					{
-						if (!(sub.isArray() && sub.isPrimitive()))
-						{
-							break checkMethod;
-						}
+						if (!(sub.isArray() && sub.isPrimitive())){break checkMethod;}
 						String data[] = new String[sub.size()];
 						for (int j = 0; j < data.length; ++j)
 						{
@@ -318,90 +273,27 @@ public class CallProgramFunction extends FunctionOperation{
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					return new ExceptionOperation(e.toString());
 				}
-				if (ret instanceof Integer)
-				{
-					return new RealLongOperation((int)ret);
-				}
-				if (ret instanceof Long)
-				{
-					return new RealLongOperation((long)ret);
-				}
-				if (ret instanceof Double)
-				{
-					return new RealDoubleOperation((double)ret);
-				}
-				if (ret instanceof Float)
-				{
-					return new RealDoubleOperation((float)ret);
-				}				
-				if (ret instanceof String)
-				{
-					return new StringOperation((String)ret);
-				}
-				if (ret instanceof Boolean)
-				{
-					return BooleanOperation.get((boolean)ret);
-				}
-				if (ret instanceof Character)
-				{
-					return CharacterOperation.getInstance((char)ret);
-				}
-				if (ret instanceof Matrixd)
-				{
-					return new ArrayOperation((Matrixd)ret);
-				}
-				if (ret instanceof DoubleList)
-				{
-					return new ArrayOperation((DoubleList)ret);
-				}
-				if (ret instanceof IntegerList)
-				{
-					return new ArrayOperation((IntegerList)ret);
-				}
-				if (ret instanceof int[])
-				{
-					return new ArrayOperation((int[])ret);
-				}
-				if (ret instanceof float[])
-				{
-					return new ArrayOperation((float[])ret);
-				}
-				if (ret instanceof boolean[])
-				{
-					return new ArrayOperation((boolean[])ret);
-				}
-				if (ret instanceof char[])
-				{
-					return new ArrayOperation((char[])ret);
-				}
-				if (ret instanceof long[])
-				{
-					return new ArrayOperation((long[])ret);
-				}
-				if (ret instanceof String[])
-				{
-					return new ArrayOperation((String[])ret);
-				}
-				if (ret instanceof byte[])
-				{
-					return new ArrayOperation((byte[])ret);
-				}
-				if (ret instanceof Matrixd)
-				{
-					return new ArrayOperation((Matrixd)ret);
-				}
-				if (ret instanceof double[])
-				{
-					return new ArrayOperation((double[])ret);
-				}
-				if (ret instanceof Color)
-				{
-					return new RealLongOperation(((Color)ret).getRGB());
-				}
-				if (ret instanceof Operation)
-				{
-					return (Operation)ret;
-				}
+				if (ret instanceof Integer) {return new RealLongOperation((int)ret);}
+				if (ret instanceof Long)    {return new RealLongOperation((long)ret);}
+				if (ret instanceof Double)  {return new RealDoubleOperation((double)ret);}
+				if (ret instanceof Float)   {return new RealDoubleOperation((float)ret);}
+				if (ret instanceof String)  {return new StringOperation((String)ret);}
+				if (ret instanceof Boolean) {return BooleanOperation.get((boolean)ret);}
+				if (ret instanceof Character){return CharacterOperation.getInstance((char)ret);}
+				if (ret instanceof Matrixd) {return new ArrayOperation((Matrixd<?>)ret);}
+				if (ret instanceof DoubleList){return new ArrayOperation((DoubleList)ret);}
+				if (ret instanceof IntegerList){return new ArrayOperation((IntegerList)ret);}
+				if (ret instanceof int[])   {return new ArrayOperation((int[])ret);}
+				if (ret instanceof float[]) {return new ArrayOperation((float[])ret);}
+				if (ret instanceof boolean[]){return new ArrayOperation((boolean[])ret);}
+				if (ret instanceof char[])  {return new ArrayOperation((char[])ret);}
+				if (ret instanceof long[])  {return new ArrayOperation((long[])ret);}
+				if (ret instanceof String[]){return new ArrayOperation((String[])ret);}
+				if (ret instanceof byte[])  {return new ArrayOperation((byte[])ret);}
+				if (ret instanceof Matrixd) {return new ArrayOperation((Matrixd<?>)ret);}
+				if (ret instanceof double[]){return new ArrayOperation((double[])ret);}
+				if (ret instanceof Color)   {return new RealLongOperation(((Color)ret).getRGB());}
+				if (ret instanceof Operation){return (Operation)ret;}
 				return new StringOperation(String.valueOf(ret));
 			}
 		}

@@ -57,10 +57,12 @@ public final class Matrix3x2d implements Matrixd<Matrix3x2d>, DoubleList{
     public final boolean invert(Matrix3x2d read)
     {
         double [] mat = new double[size() * 2];
-        read.getColMajor(mat, 0, 8);
-        mat[4] = mat[13] = mat[22] = mat[31] = 1;
-        if (Calculate.toRREF(mat, 4) != 4) {return false;}
-        setColMajor(mat, 4, 8);
+        read.getColMajor(mat, 0, 6);
+        mat[3] = mat[10] = 1;
+        if (Calculate.toRREF(mat, 2) != 2) {return false;}
+        setColMajor(mat, 3, 6);
+        this.m02 = -mat[2];
+        this.m12 = -mat[8];
         return true;
     }
 
@@ -326,12 +328,6 @@ public final class Matrix3x2d implements Matrixd<Matrix3x2d>, DoubleList{
 
     public final void postTranslate(double x, double y){
         m02 += x; m12 += y;
-    }
-
-    public final void affineScale(double s)
-    {
-        m00 *= s; m10 *= s;
-        m01 *= s; m11 *= s;
     }
 
     public final void preScale(double x, double y) {

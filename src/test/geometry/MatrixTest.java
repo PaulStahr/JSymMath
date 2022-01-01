@@ -30,6 +30,18 @@ public class MatrixTest<T> {
     }
 
     @Test
+    public void testInverse3x2()
+    {
+        Matrix3x2d orig = new Matrix3x2d(2,2,-2,-1,1,1);
+        Matrix3x2d mat = new Matrix3x2d(orig);
+        Matrix3x2d identity = new Matrix3x2d();
+        Matrix3x2d dotprod = new Matrix3x2d();
+        assertTrue(mat.invert(mat));
+        dotprod.dot(orig,mat);
+        assertTrue(dotprod + "!=" + identity, ArrayUtil.qdist(dotprod, 0, identity, 0, mat.size()) < 0.1);
+    }
+
+    @Test
     public void testInverse4()
     {
         Matrix4d orig = new Matrix4d(1,1,-1,1,-1,1,1,1,1,-1,1,1,1,1,1,-1);
