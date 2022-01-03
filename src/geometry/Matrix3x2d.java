@@ -341,14 +341,14 @@ public final class Matrix3x2d implements Matrixd<Matrix3x2d>, DoubleList{
         m10 *= y; m11 *= y; m12 *= y;
     }
 
-    public final void rdot(Vector3d vector){
+    public final void ldot(Vector3d vector){
         final double x = vector.x, y = vector.y, z = vector.z;
         vector.x = m00 * x + m10 * y + z;
         vector.y = m01 * x + m11 * y + z;
         vector.z = m02 * x + m12 * y + z;
     }
 
-    public final void ldot(Vector3d vector){
+    public final void rdot(Vector3d vector){
         final double x = vector.x, y = vector.y, z = vector.z;
         vector.x = m00 * x + m01 * y + m02 * z;
         vector.y = m10 * x + m11 * y + m12 * z;

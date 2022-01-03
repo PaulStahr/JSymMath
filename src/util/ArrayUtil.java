@@ -107,7 +107,7 @@ public class ArrayUtil {
 		return max;
 	}
 
-    public static final float[] minMax(float data[])
+    public static final float[] minMax(float data[], float result[])
     {
         float min = Float.POSITIVE_INFINITY;
         float max = Float.NEGATIVE_INFINITY;
@@ -116,10 +116,12 @@ public class ArrayUtil {
             if (val < min){min = val;}
             if (val > max){max = val;}
         }
-        return new float[] {min, max};
+        result[0] = min;
+        result[1] = max;
+        return result;
     }
 
-    public static final int[] minMax(int data[])
+    public static final int[] minMax(int data[], int result[])
     {
         int min = Integer.MAX_VALUE;
         int max = Integer.MIN_VALUE;
@@ -128,10 +130,12 @@ public class ArrayUtil {
             if (val < min){min = val;}
             if (val > max){max = val;}
         }
-        return new int[] {min, max};
+        result[0] = min;
+        result[1] = max;
+        return result;
     }
 
-    public static double[] minMax(double[] data) {
+    public static double[] minMax(double[] data, double result[]) {
         double min = Double.POSITIVE_INFINITY;
         double max = Double.NEGATIVE_INFINITY;
         for (double val : data)
@@ -139,7 +143,9 @@ public class ArrayUtil {
             if (val < min){min = val;}
             if (val > max){max = val;}
         }
-        return new double[] {min, max};
+        result[0] = min;
+        result[1] = max;
+        return result;
     }
 
 	public static final float min(float data[])
