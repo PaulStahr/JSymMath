@@ -42,7 +42,8 @@ public class IntegerArrayList extends AbstractList<Integer> implements IntegerLi
 		if (!stringList.equals("")) {
 			String[] SplitString = stringList.split(",");
 			for (String str : SplitString) {
-                add(Integer.valueOf(str));
+			    int x = Integer.valueOf(str);
+			    add(x);
             }
 		}
 	}
@@ -108,7 +109,12 @@ public class IntegerArrayList extends AbstractList<Integer> implements IntegerLi
 
 	private void enlargeTo(int length)
 	{
-		if (length > data.length){this.data = Arrays.copyOf(this.data, Math.max(this.data.length, data.length * 2));}
+	    try {
+	        if (length > data.length){this.data = Arrays.copyOf(this.data, Math.max(length, data.length * 2));}
+	    }catch(OutOfMemoryError e) {
+	        System.err.print("Out of memory error" + e);
+	        this.data = Arrays.copyOf(this.data, Math.max(length, data.length * 3/2));
+	    }
 	}
 
 	public void add(int data[], int begin, int end)
@@ -120,7 +126,7 @@ public class IntegerArrayList extends AbstractList<Integer> implements IntegerLi
 
 	public void add(int value0, int value1, int value2)
 	{
-		if (length + 3 > data.length){data = Arrays.copyOf(data, Math.max(length + 3, data.length * 2));}
+	    enlargeTo(length + 3);
 		data[length++] = value0;
 		data[length++] = value1;
 		data[length++] = value2;

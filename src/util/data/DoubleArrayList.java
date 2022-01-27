@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -63,20 +63,23 @@ public class DoubleArrayList extends AbstractList<Double> implements DoubleList{
 
 	public void add(DoubleList dl){
 		int size = dl.size();
-		ensureSize(this.length + size);
+		enlargeTo(this.length + size);
 		for (int i = 0; i < dl.size(); ++i)
 		{
 			data[length++] = dl.getD(i);
 		}
 	}
-	
-	private void ensureSize(int size)
-	{
-		if (size >= data.length){
-			data = Arrays.copyOf(data, Math.max(size, data.length * 2));
-		}
-	}
-	
+
+    private void enlargeTo(int length)
+    {
+        try {
+            if (length > data.length){this.data = Arrays.copyOf(this.data, Math.max(length, data.length * 2));}
+        }catch(OutOfMemoryError e) {
+            System.err.print("Out of memory error" + e);
+            this.data = Arrays.copyOf(this.data, Math.max(length, data.length * 3/2));
+        }
+    }
+
 	public boolean add(double value){
 		if (length == data.length){
 			data = Arrays.copyOf(data, Math.max(data.length + 1, data.length * 2));
@@ -84,7 +87,7 @@ public class DoubleArrayList extends AbstractList<Double> implements DoubleList{
 		data[length++] = value;
 		return true;
 	}
-	
+
 	public boolean add(double value0, double value1, double value2){
 		if (length + 3 > data.length){data = Arrays.copyOf(data, Math.max(length + 3, data.length * 2));}
 		data[length++] = value0;
@@ -92,21 +95,21 @@ public class DoubleArrayList extends AbstractList<Double> implements DoubleList{
 		data[length++] = value2;
 		return true;
 	}
-	
+
 	@Override
 	public Double get(int index) {
 		if (index >= length)
 			throw new ArrayIndexOutOfBoundsException(index);
 		return data[index];
 	}
-	
+
 	@Override
     public double getD(int index){
 		if (index >= length)
 			throw new ArrayIndexOutOfBoundsException(index);
 		return data[index];
 	}
-	
+
 	public final double sum()
 	{
 		double sum = 0;
@@ -116,7 +119,7 @@ public class DoubleArrayList extends AbstractList<Double> implements DoubleList{
 		}
 		return sum;
 	}
-	
+
 	public final double diffSumQ(double avarage)
 	{
 		double var = 0;
@@ -165,5 +168,13 @@ public class DoubleArrayList extends AbstractList<Double> implements DoubleList{
 	public double average() {
 		return sum() / size();
 	}
+
+    @Override
+    public double[] toArray(double[] data, int offset, long from, long to) {
+        if (to > length) {throw new IndexOutOfBoundsException();}
+        data = ArrayUtil.ensureLength(data, (int)(to - from + offset));
+        System.arraycopy(this.data, (int)from, data, offset, (int)(to - from));
+        return data;
+    }
 
 }
