@@ -587,4 +587,6 @@ public final class Matrix3x2d implements Matrixd<Matrix3x2d>, DoubleList{
     public Matrix3x2d clone() {
         return new Matrix3x2d(this);
     }
+
+    public double det() {return m00 * m11 - m10 * m01;}
 }
