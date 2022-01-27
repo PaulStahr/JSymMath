@@ -14,4 +14,10 @@ public interface DoubleList{
         for (long i = from; i < to; ++i){data[offset++] = getD(i);}
         return data;
     }
+
+    default float[] toArray(float[] data, int offset, long from, long to) {
+        if (data.length < to - from + offset) {data = new float[(int)(to - from + offset)];}
+        for (long i = from; i < to; ++i){data[offset++] = (float)getD(i);}
+        return data;
+    }
 }

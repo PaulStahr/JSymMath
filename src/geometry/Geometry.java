@@ -188,7 +188,7 @@ public class Geometry {
 	public static final void volumeToMesh(int[] data, int width, int height, int depth, double mid, IntegerArrayList faceIndices, DoubleArrayList vertexPositions)
 	{
 		int offsets[] = new int[8];
-		int vertexIndices[] = new int[(width) * (height) * (depth) * 3];
+		int vertexIndices[] = new int[width * height * 2 * 3];
 		Arrays.fill(vertexIndices, -1);
 		boolean inside[] = new boolean[8];
 		boolean visited[] = new boolean[8];
@@ -201,13 +201,15 @@ public class Geometry {
 			}
 		}
 		IntegerArrayList searchStack = new IntegerArrayList();
-		for (int z = 0, index = 0; z < depth - 1; ++z, ++index)
+		for (int z = 0; z < depth - 1; ++z)
 		{
-			for (int y = 0; y < height - 1; ++y, ++index)
+            System.arraycopy(vertexIndices, width * height * 3, vertexIndices, 0, width * height * 3);
+            Arrays.fill(vertexIndices, width * height * 3, width * height * 6, -1);
+			for (int y = 0; y < height - 1; ++y)
 			{
-				for (int x = 0; x < width - 1; ++x, ++index)
+				for (int x = 0; x < width - 1; ++x)
 				{
-					index = x + (width * (y + height * z));
+					final int index = x + (width * (y + height * z));
 					boolean is_cutted = false;
 					{
 						boolean first = inside[0] = data[index] > mid;
@@ -218,7 +220,6 @@ public class Geometry {
 					}
 					if (is_cutted)
 					{
-						int cubeIndex = x + (width - 1) * (y + (height - 1) * z);
 						Arrays.fill(visited, false);
 						for (int bitmask = 0; bitmask < 8; ++bitmask)
 						{
@@ -259,11 +260,10 @@ public class Geometry {
 							while(true)
 							{
 								final int outerVertex = innerVertex ^ (1 << inOutAxis);
-								int lowerIndex = innerVertex & outerVertex;
-								int higherIndex = innerVertex | outerVertex;
-								int vIndex = (cubeIndex + offsets[lowerIndex]) * 3 + inOutAxis;
-								if (vIndex >= vertexIndices.length){throw new ArrayIndexOutOfBoundsException("(" + cubeIndex + " + " + offsets[lowerIndex] + ") * " + 3 + " + " + inOutAxis + " = " + vIndex + " < " + vertexIndices.length);}
-								int facePoint2 = vertexIndices[vIndex];
+								final int lowerIndex = innerVertex & outerVertex;
+								final int higherIndex = innerVertex | outerVertex;
+                                final int vIndex = (x + width * y + offsets[lowerIndex]) * 3 + inOutAxis;
+                                int facePoint2 = vertexIndices[vIndex];
 								if (facePoint2 == -1)
 								{
 									double v0 = data[index + offsets[lowerIndex]], v1 = data[index + offsets[higherIndex]];
@@ -335,152 +335,201 @@ public class Geometry {
 		}
 	}
 
-	public static final void volumeToMesh(float[] data, int width, int height, int depth, double mid, IntegerArrayList faceIndices, DoubleArrayList vertexPositions)
-	{
-		int offsets[] = new int[8];
-		int vertexIndices[] = new int[width * height * depth * 3];
-		Arrays.fill(vertexIndices, -1);
-		boolean inside[] = new boolean[8];
-		boolean visited[] = new boolean[8];
-		boolean insideConnected[] = new boolean[8];
-		for (int i = 0; i < 3; ++i)
-		{
-			for (int j = 0; j < (1 << i); ++j)
-			{
-				offsets[j + (1 << i)] = offsets[j] + (i == 0 ? 1 : i == 1 ? width : width * height);
-			}
-		}
-		IntegerArrayList searchStack = new IntegerArrayList();
-		for (int z = 0, index = 0; z < depth - 1; ++z, ++index)
-		{
-			for (int y = 0; y < height - 1; ++y, ++index)
-			{
-				for (int x = 0; x < width - 1; ++x, ++index)
-				{
-					index = x + (width * (y + height * z));
-					boolean is_cutted = false;
-					{
-						boolean first = inside[0] = data[index] > mid;
-						for (int bitmask = 1; bitmask < 8; ++bitmask)
-						{
-							is_cutted |= (inside[bitmask] = (data[index + offsets[bitmask]] > mid)) != first;
-						}
-					}
-					if (is_cutted)
-					{
-						int cubeIndex = x + width * (y + height * z);
-						Arrays.fill(visited, false);
-						for (int bitmask = 0; bitmask < 8; ++bitmask)
-						{
-							Arrays.fill(insideConnected, false);
-							int innerVertex = bitmask;
-							int inOutAxis = -1;
-							if (inside[bitmask] && !visited[bitmask])
-							{
-								visited[bitmask] = insideConnected[bitmask] = true;
-								searchStack.add(bitmask);
-								while(!searchStack.isEmpty())
-								{
-									int current = searchStack.pop();
-									for (int axis = 0; axis < 3;++axis)
-									{
-										int neighbour = current ^ (1 << axis);
-										if (inside[neighbour] && !visited[neighbour])
-										{
-											searchStack.add(neighbour);
-											visited[neighbour] = insideConnected[neighbour] = true;
-										}
-										if (!inside[neighbour])
-										{
-											innerVertex = current;
-											inOutAxis = axis;
-										}
-									}
-								}
-							}
-							if (inOutAxis == -1){continue;}
-							//At this point connectedSet marks a set of vertices which are connected and are greater then mid
-							int facePoint0 = -1, facePoint1 = -1;
-							final int startInnerVertex = innerVertex;
-							final int startInOutAxis = inOutAxis;
-							while(true)
-							{
-								final int outerVertex = innerVertex ^ (1 << inOutAxis);
-								final int lowerVertex = innerVertex & outerVertex;
-								final int higherVertex = innerVertex | outerVertex;
-								final int vIndex = (cubeIndex + offsets[lowerVertex]) * 3 + inOutAxis;
-								if (vIndex >= vertexIndices.length){throw new ArrayIndexOutOfBoundsException("(" + cubeIndex + " + " + offsets[lowerVertex] + ") * " + 3 + " + " + inOutAxis + " = " + vIndex + " < " + vertexIndices.length);}
-								int facePoint2 = vertexIndices[vIndex];
-								if (facePoint2 == -1)
-								{
-									final double v0 = data[index + offsets[lowerVertex]], v1 = data[index + offsets[higherVertex]];
-									final double alpha = (v0 - mid) / (v0 - v1);
-									if (alpha < 0 || alpha > 1){throw new RuntimeException("alpha not in range: " + alpha);}
-									/*if (alpha <= 0.00001) //clip near to lattice values to remove small triangles
-									{
-										vIndex = (cubeIndex + offsets[lowerVertex]) * 4;
-										facePoint2 = vertexIndices[vIndex];
-									}
-									if (alpha >= 0.99999) //clip near to lattice values to remove small triangles
-									{
-										vIndex = (cubeIndex + offsets[higherVertex]) * 4;
-										facePoint2 = vertexIndices[vIndex];
-									}*/
-									if (facePoint2 == -1)
-									{
-										facePoint2 = vertexIndices[vIndex] = vertexPositions.size() / 3;
-	                                    double xp = x + ((lowerVertex >> 0) & 1);
-	                                    double yp = y + ((lowerVertex >> 1) & 1);
-	                                    double zp = z + ((lowerVertex >> 2) & 1);
-                                        int addIndex = vertexPositions.size() + inOutAxis;
-										vertexPositions.add(xp, yp, zp);
-										vertexPositions.set(addIndex, vertexPositions.getD(addIndex) + alpha);
-									}
-								}
-								if (facePoint0 != -1)
-								{
-									if (facePoint2 != facePoint1 && facePoint0 != facePoint1 && facePoint0 != facePoint2)
-									{
-								       faceIndices.add(facePoint0, facePoint1, facePoint2);
-									}
-								}
-								else
-								{
-									facePoint0 = facePoint1;
-								}
-								facePoint1 = facePoint2;
-								final int newAxis = (((innerVertex ^ (innerVertex >> 1) ^ (innerVertex >> 2)) & 1) + inOutAxis + 1)%3;
-								final int newInner = innerVertex ^ (1 << newAxis);
-								final int newOuter = outerVertex ^ (1 << newAxis);
-								if (insideConnected[newInner] && !insideConnected[newOuter])
-								{
-									innerVertex = newInner;//move on both vertices
-								}
-								else if (!insideConnected[newInner])
-								{
-									inOutAxis = newAxis;//move on outer vertex
-								}
-								else if (insideConnected[newOuter])
-								{
-									innerVertex = newOuter;//move on inner vertex
-									inOutAxis = newAxis;
-								}
-								else
-								{
-									throw new RuntimeException("");
-								}
-								if (innerVertex == startInnerVertex && inOutAxis == startInOutAxis)
-								{
-								    break;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+	private static final void volumeToMeshSlice(
+	        int height,
+	        int width,
+	        int z,
+	        int offsets[],
+            IntegerArrayList searchStack,
+            int vertexIndices[],
+            DoubleArrayList vertexPositions,
+            IntegerArrayList faceIndices,
+	        boolean inside[],
+	        boolean insideConnected[],
+	        boolean visited[],
+	        float dataValues[],
+            int indexOffset,
+	        double mid) {
+	    for (int y = 0; y < height - 1; ++y)
+        {
+            for (int x = 0; x < width - 1; ++x)
+            {
+                final int index = x + width * y + indexOffset;
+                boolean is_cutted = false;
+                {
+                    boolean first = inside[0] = dataValues[index] > mid;
+                    for (int bitmask = 1; bitmask < 8; ++bitmask)
+                    {
+                        is_cutted |= (inside[bitmask] = (dataValues[index + offsets[bitmask]] > mid)) != first;
+                    }
+                }
+                if (is_cutted)
+                {
+                    Arrays.fill(visited, false);
+                    for (int bitmask = 0; bitmask < 8; ++bitmask)
+                    {
+                        Arrays.fill(insideConnected, false);
+                        int innerVertex = bitmask;
+                        int inOutAxis = -1;
+                        if (inside[bitmask] && !visited[bitmask])
+                        {
+                            visited[bitmask] = insideConnected[bitmask] = true;
+                            searchStack.add(bitmask);
+                            while(!searchStack.isEmpty())
+                            {
+                                int current = searchStack.pop();
+                                for (int axis = 0; axis < 3;++axis)
+                                {
+                                    int neighbour = current ^ (1 << axis);
+                                    if (inside[neighbour] && !visited[neighbour])
+                                    {
+                                        searchStack.add(neighbour);
+                                        visited[neighbour] = insideConnected[neighbour] = true;
+                                    }
+                                    if (!inside[neighbour])
+                                    {
+                                        innerVertex = current;
+                                        inOutAxis = axis;
+                                    }
+                                }
+                            }
+                        }
+                        if (inOutAxis == -1){continue;}
+                        //At this point connectedSet marks a set of vertices which are connected and are greater then mid
+                        int facePoint0 = -1, facePoint1 = -1;
+                        final int startInnerVertex = innerVertex;
+                        final int startInOutAxis = inOutAxis;
+                        while(true)
+                        {
+                            final int outerVertex = innerVertex ^ (1 << inOutAxis);
+                            final int lowerVertex = innerVertex & outerVertex;
+                            final int higherVertex = innerVertex | outerVertex;
+                            final int vIndex = (x + width * y + offsets[lowerVertex]) * 3 + inOutAxis;
+                            int facePoint2 = vertexIndices[vIndex];
+                            if (facePoint2 == -1)
+                            {
+                                final double v0 = dataValues[index + offsets[lowerVertex]], v1 = dataValues[index + offsets[higherVertex]];
+                                final double alpha = (v0 - mid) / (v0 - v1);
+                                if (alpha < 0 || alpha > 1){throw new RuntimeException("alpha not in range: " + alpha);}
+                                /*if (alpha <= 0.00001) //clip near to lattice values to remove small triangles
+                                {
+                                    vIndex = (cubeIndex + offsets[lowerVertex]) * 4;
+                                    facePoint2 = vertexIndices[vIndex];
+                                }
+                                if (alpha >= 0.99999) //clip near to lattice values to remove small triangles
+                                {
+                                    vIndex = (cubeIndex + offsets[higherVertex]) * 4;
+                                    facePoint2 = vertexIndices[vIndex];
+                                }*/
+                                if (facePoint2 == -1)
+                                {
+                                    facePoint2 = vertexIndices[vIndex] = vertexPositions.size() / 3;
+                                    double xp = x + ((lowerVertex >> 0) & 1);
+                                    double yp = y + ((lowerVertex >> 1) & 1);
+                                    double zp = z + ((lowerVertex >> 2) & 1);
+                                    int addIndex = vertexPositions.size() + inOutAxis;
+                                    vertexPositions.add(xp, yp, zp);
+                                    vertexPositions.set(addIndex, vertexPositions.getD(addIndex) + alpha);
+                                }
+                            }
+                            if (facePoint0 != -1)
+                            {
+                                if (facePoint2 != facePoint1 && facePoint0 != facePoint1 && facePoint0 != facePoint2)
+                                {
+                                   faceIndices.add(facePoint0, facePoint1, facePoint2);
+                                }
+                            }
+                            else
+                            {
+                                facePoint0 = facePoint1;
+                            }
+                            facePoint1 = facePoint2;
+                            final int newAxis = (((innerVertex ^ (innerVertex >> 1) ^ (innerVertex >> 2)) & 1) + inOutAxis + 1)%3;
+                            final int newInner = innerVertex ^ (1 << newAxis);
+                            final int newOuter = outerVertex ^ (1 << newAxis);
+                            if (insideConnected[newInner] && !insideConnected[newOuter])
+                            {
+                                innerVertex = newInner;//move on both vertices
+                            }
+                            else if (!insideConnected[newInner])
+                            {
+                                inOutAxis = newAxis;//move on outer vertex
+                            }
+                            else if (insideConnected[newOuter])
+                            {
+                                innerVertex = newOuter;//move on inner vertex
+                                inOutAxis = newAxis;
+                            }
+                            else
+                            {
+                                throw new RuntimeException("");
+                            }
+                            if (innerVertex == startInnerVertex && inOutAxis == startInOutAxis)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 	}
 
+	   public static final void volumeToMesh(float[] data, int width, int height, int depth, double mid, IntegerArrayList faceIndices, DoubleArrayList vertexPositions)
+	    {
+	        int offsets[] = new int[8];
+	        int vertexIndices[] = new int[width * height * 2 * 3];
+	        Arrays.fill(vertexIndices, -1);
+	        boolean inside[] = new boolean[8];
+	        boolean visited[] = new boolean[8];
+	        boolean insideConnected[] = new boolean[8];
+	        for (int i = 0; i < 3; ++i)
+	        {
+	            for (int j = 0; j < (1 << i); ++j)
+	            {
+	                offsets[j + (1 << i)] = offsets[j] + (i == 0 ? 1 : i == 1 ? width : width * height);
+	            }
+	        }
+	        IntegerArrayList searchStack = new IntegerArrayList();
+	        for (int z = 0; z < depth - 1; ++z)
+	        {
+	            System.arraycopy(vertexIndices, width * height * 3, vertexIndices, 0, width * height * 3);
+	            Arrays.fill(vertexIndices, width * height * 3, width * height * 6, -1);
+	            volumeToMeshSlice(height, width, z, offsets, searchStack, vertexIndices, vertexPositions, faceIndices, inside, insideConnected, visited, data, width * height * z, mid);
+	        }
+	    }
+
+	public static final void volumeToMesh(DoubleList data, int width, int height, int depth, double mid, IntegerArrayList faceIndices, DoubleArrayList vertexPositions)
+    {
+        int offsets[] = new int[8];
+        int vertexIndices[] = new int[width * height * 6];
+        Arrays.fill(vertexIndices, -1);
+        boolean inside[] = new boolean[8];
+        boolean visited[] = new boolean[8];
+        boolean insideConnected[] = new boolean[8];
+        float dataValues[] = new float[width * height * 2];
+        for (int i = 0; i < 3; ++i)
+        {
+            for (int j = 0; j < (1 << i); ++j)
+            {
+                offsets[j + (1 << i)] = offsets[j] + (i == 0 ? 1 : i == 1 ? width : width * height);
+            }
+        }
+        IntegerArrayList searchStack = new IntegerArrayList();
+        if (depth > 0)
+        {
+            data.toArray(dataValues, width * height, 0, width * height);
+        }
+        for (int z = 0; z < depth - 1; ++z)
+        {
+            System.arraycopy(vertexIndices, width * height * 3, vertexIndices, 0, width * height * 3);
+            Arrays.fill(vertexIndices, width * height * 3, width * height * 6, -1);
+
+            System.arraycopy(dataValues, width * height, dataValues, 0, width * height);
+            data.toArray(dataValues, width * height, (long)width * height * (z + 1), (long)width * height * (z + 2));
+            volumeToMeshSlice(height, width, z, offsets, searchStack, vertexIndices, vertexPositions, faceIndices, inside, insideConnected, visited, dataValues, 0, mid);
+        }
+    }
 	public static final void parse(String str, Vectorf vec) throws ParseException
 	{
 		if (str.charAt(0) != '(' || str.charAt(str.length() - 1) != ')')

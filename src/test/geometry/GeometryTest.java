@@ -3,11 +3,16 @@ package test.geometry;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import geometry.Geometry;
 import geometry.Vector3d;
+import util.ArrayUtil;
 import util.Interpolator;
 import util.data.DoubleArrayList;
 import util.data.IntegerArrayList;
@@ -118,56 +123,98 @@ public class GeometryTest {
         return data;
     }
 
-    @Test
-    public void testVolumeToMesh(){
-        int width = 10, height = 10, depth = 10;
-        float data[] = generateArray(sphereGenerator, width, height, depth);
-        IntegerArrayList faceIndices = new IntegerArrayList();
-        DoubleArrayList vertexPositions = new DoubleArrayList();
-        Geometry.volumeToMesh(data, width, height, depth, 0, faceIndices, vertexPositions);
-        Vector3d v = new Vector3d();
-        float expectedDist = 10f/4;
-        for (int i = 0; i < vertexPositions.size(); i += 3)
-        {
-            v.set(vertexPositions, i);
-            float smoothed = Interpolator.interpolatePoint(v.x, v.y, v.z, data, width, height, depth);
-            assertEquals(smoothed, 0, 0.05);
-            double dist = Math.sqrt(v.distanceQ(4.5, 4.5, 4.5));
-            assertEquals(dist, expectedDist, 0.05);
-       }
+
+    private static interface VolumeToMeshAdapter{
+        public void volumeToMesh(float data[], int width, int height, int depth, double mid, IntegerArrayList faceIndices, DoubleArrayList vertexPositions);
     }
 
-    @Test
-    public void clipCornerTest() {
-        float data[] = new float[8];
-        IntegerArrayList faceIndices = new IntegerArrayList();
-        DoubleArrayList vertexPositions = new DoubleArrayList();
-        for (int i = 0; i < 8; ++i)
-        {
-            Arrays.fill(data, -1);
-            data[i] = 0.000001f;
-            faceIndices.clear();
-            vertexPositions.clear();
-            Geometry.volumeToMesh(data, 2, 2, 2, 0, faceIndices, vertexPositions);
-            assertEquals("Corner " + i, 3, faceIndices.size());
-            assertEquals(9, vertexPositions.size());
+    @RunWith(Parameterized.class)
+    public static class NearestPointCalculatorTest {
+        VolumeToMeshAdapter meshAdapter;
+        public NearestPointCalculatorTest(VolumeToMeshAdapter meshAdapter) {
+            this.meshAdapter = meshAdapter;
         }
-    }
 
-    @Test
-    public void testVolumeToMeshSmall() {
-        float data[] = new float[8];
-        IntegerArrayList faceIndices = new IntegerArrayList();
-        DoubleArrayList vertexPositions = new DoubleArrayList();
-        for (int i = 0; i < 256; ++i)
+        @Parameters
+        public static List<VolumeToMeshAdapter> params()
         {
-            for (int j = 0; j < 8; ++j)
+            return Arrays.asList(new VolumeToMeshAdapter() {
+                @Override
+                public void volumeToMesh(float[] data, int width, int height, int depth, double mid,
+                        IntegerArrayList faceIndices, DoubleArrayList vertexPositions) {
+                    Geometry.volumeToMesh(data, width, height, depth, mid, faceIndices, vertexPositions);
+                }
+            }, new VolumeToMeshAdapter() {
+                @Override
+                public void volumeToMesh(float[] data, int width, int height, int depth, double mid,
+                        IntegerArrayList faceIndices, DoubleArrayList vertexPositions) {
+                    int dataI[] = new int[data.length];
+                    float minMax[] = new float[2];
+                    ArrayUtil.minMax(data, minMax);
+                    ArrayUtil.mult(data, 0, data.length, dataI, 0, Integer.MAX_VALUE / Math.max(-minMax[0], minMax[0]));
+                    Geometry.volumeToMesh(data, width, height, depth, mid, faceIndices, vertexPositions);
+                }
+            }, new VolumeToMeshAdapter() {
+                @Override
+                public void volumeToMesh(float[] data, int width, int height, int depth, double mid,
+                    IntegerArrayList faceIndices, DoubleArrayList vertexPositions) {
+                    DoubleArrayList dal = new DoubleArrayList();
+                    for (int i = 0; i < data.length; ++i) {dal.add(data[i]);}
+                    Geometry.volumeToMesh(dal, width, height, depth, mid, faceIndices, vertexPositions);
+                }
+            });}
+
+        @Test
+        public void testVolumeToMesh(){
+            int width = 10, height = 10, depth = 10;
+            float data[] = generateArray(sphereGenerator, width, height, depth);
+            IntegerArrayList faceIndices = new IntegerArrayList();
+            DoubleArrayList vertexPositions = new DoubleArrayList();
+            meshAdapter.volumeToMesh(data, width, height, depth, 0, faceIndices, vertexPositions);
+            Vector3d v = new Vector3d();
+            float expectedDist = 10f/4;
+            for (int i = 0; i < vertexPositions.size(); i += 3)
             {
-                data[j] = ((i >> j) % 2) * 2 - 1;
+                v.set(vertexPositions, i);
+                float smoothed = Interpolator.interpolatePoint(v.x, v.y, v.z, data, width, height, depth);
+                assertEquals(smoothed, 0, 0.05);
+                double dist = Math.sqrt(v.distanceQ(4.5, 4.5, 4.5));
+                assertEquals(dist, expectedDist, 0.05);
+           }
+        }
+
+        @Test
+        public void clipCornerTest() {
+            float data[] = new float[8];
+            IntegerArrayList faceIndices = new IntegerArrayList();
+            DoubleArrayList vertexPositions = new DoubleArrayList();
+            for (int i = 0; i < 8; ++i)
+            {
+                Arrays.fill(data, -1);
+                data[i] = 0.000001f;
+                faceIndices.clear();
+                vertexPositions.clear();
+                meshAdapter.volumeToMesh(data, 2, 2, 2, 0, faceIndices, vertexPositions);
+                assertEquals("Corner " + i, 3, faceIndices.size());
+                assertEquals(9, vertexPositions.size());
             }
-            faceIndices.clear();
-            vertexPositions.clear();
-            Geometry.volumeToMesh(data, 2, 2, 2, 0, faceIndices, vertexPositions);
+        }
+
+        @Test
+        public void testVolumeToMeshSmall() {
+            float data[] = new float[8];
+            IntegerArrayList faceIndices = new IntegerArrayList();
+            DoubleArrayList vertexPositions = new DoubleArrayList();
+            for (int i = 0; i < 256; ++i)
+            {
+                for (int j = 0; j < 8; ++j)
+                {
+                    data[j] = ((i >> j) % 2) * 2 - 1;
+                }
+                faceIndices.clear();
+                vertexPositions.clear();
+                Geometry.volumeToMesh(data, 2, 2, 2, 0, faceIndices, vertexPositions);
+            }
         }
     }
 }

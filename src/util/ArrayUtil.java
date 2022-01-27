@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Predicate;
 
@@ -290,9 +291,10 @@ public class ArrayUtil {
 
     public static final float[] setToLength(float[] data, int length) {return data != null && data.length == length ? data : new float[length];}
 
-	public static float[]	ensureLength(float[] data, int size) 	{return data.length >= size ? data : new float[size];}
-    public static byte[]    ensureLength(byte[] data, int size)     {return data.length >= size ? data : new byte[size];}
-    public static long[]    ensureLength(long[] data, int size)     {return data.length >= size ? data : new long[size];}
+    public static float[]   ensureLength(float[]  data, int size)   {return data.length >= size ? data : Arrays.copyOf(data, size);}
+    public static double[]  ensureLength(double[] data, int size)   {return data.length >= size ? data : Arrays.copyOf(data, size);}
+    public static byte[]    ensureLength(byte[]   data, int size)   {return data.length >= size ? data : Arrays.copyOf(data, size);}
+    public static long[]    ensureLength(long[]   data, int size)   {return data.length >= size ? data : Arrays.copyOf(data, size);}
 
 	public static int max(int[] imageColorArray, int begin, int end) {
 		int max = Integer.MIN_VALUE;
@@ -347,6 +349,15 @@ public class ArrayUtil {
 
 
     public static void mult(float[] in, int begin, int end, float[] out, int outBegin, float mult) {
+        for (; begin < end; ++begin, ++outBegin)
+        {
+            out[outBegin] += in[begin] * mult;
+        }
+    }
+
+
+
+    public static void mult(float[] in, int begin, int end, int[] out, int outBegin, float mult) {
         for (; begin < end; ++begin, ++outBegin)
         {
             out[outBegin] += in[begin] * mult;
