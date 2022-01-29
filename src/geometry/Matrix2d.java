@@ -74,7 +74,8 @@ public class Matrix2d implements Matrixd<Matrix2d>{
 		}
 	}
 
-	  public final void dotl(Matrix2d lhs)
+	  @Override
+    public final void dotl(Matrix2d lhs)
 	   {
 	       double x = lhs.m00 * m00 + lhs.m01 * m10;
 	       double y = lhs.m10 * m00 + lhs.m11 * m10;
@@ -84,7 +85,8 @@ public class Matrix2d implements Matrixd<Matrix2d>{
 	            m01 = x;       m11 = y;
 	   }
 
-	   public final void dotr(Matrix2d rhs)
+	   @Override
+    public final void dotr(Matrix2d rhs)
 	   {
 	       double v0 = m00 * rhs.m00 + m01 * rhs.m10;
 	       double v1 = m00 * rhs.m01 + m01 * rhs.m11;
@@ -133,4 +135,7 @@ public class Matrix2d implements Matrixd<Matrix2d>{
     public Matrix2d clone() {
         return new Matrix2d(this);
     }
+
+    @Override
+    public double[] toArrayD() {return new double[] {m00, m01,m10, m11};}
 }

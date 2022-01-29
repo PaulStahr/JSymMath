@@ -14,9 +14,7 @@ public class JniInterface {
         return JniInterface.class.getResourceAsStream(getResourceFolder().concat(file));
     }
 
-    public static final String getResourceFolder(){
-        return resourceFolder;
-    }
+    public static final String getResourceFolder(){return resourceFolder;}
 
     public static void loadLib(String file) throws IOException {
         InputStream in = JniInterface.getResourceAsStream(file);

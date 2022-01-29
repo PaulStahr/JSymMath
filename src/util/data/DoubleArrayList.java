@@ -70,6 +70,15 @@ public class DoubleArrayList extends AbstractList<Double> implements DoubleList{
 		}
 	}
 
+    public void add(FloatList dl){
+        int size = dl.size();
+        enlargeTo(this.length + size);
+        for (int i = 0; i < dl.size(); ++i)
+        {
+            data[length++] = dl.getF(i);
+        }
+    }
+
     private void enlargeTo(int length)
     {
         try {
@@ -88,7 +97,8 @@ public class DoubleArrayList extends AbstractList<Double> implements DoubleList{
 		return true;
 	}
 
-	public boolean add(double value0, double value1, double value2){
+	@Override
+    public boolean addTuple(double value0, double value1, double value2){
 		if (length + 3 > data.length){data = Arrays.copyOf(data, Math.max(length + 3, data.length * 2));}
 		data[length++] = value0;
 		data[length++] = value1;
@@ -147,12 +157,10 @@ public class DoubleArrayList extends AbstractList<Double> implements DoubleList{
 	@Override
 	public void clear(){length = 0;}
 
-	public void setSize(int i) {
-		length = i;
-		if (data.length < length)
-		{
-			data = Arrays.copyOf(data, length);
-		}
+	@Override
+    public void setSize(int l) {
+        if (data.length < l){data = Arrays.copyOf(data, l);}
+        length = l;
 	}
 
 	@Override
@@ -176,5 +184,4 @@ public class DoubleArrayList extends AbstractList<Double> implements DoubleList{
         System.arraycopy(this.data, (int)from, data, offset, (int)(to - from));
         return data;
     }
-
 }

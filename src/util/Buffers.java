@@ -198,6 +198,12 @@ public abstract class Buffers
         return buf;
     }
 
+    public static final FloatBuffer fillFloatBuffer(FloatBuffer buf, float[] data, int size) {
+        for (int i=0;i<size;i++)
+            buf.put(i,data[i]);
+        return buf;
+    }
+
     /**
      * Creates a direct IntBuffer
      * @param elements number of ints

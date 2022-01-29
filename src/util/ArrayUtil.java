@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 import util.data.DoubleList;
 import util.data.IntegerArrayList;
 import util.data.IntegerList;
+import util.data.PrimitiveList;
 
 public class ArrayUtil {
 	public static final int compareTo(char first[], char second[]) {
@@ -247,6 +248,18 @@ public class ArrayUtil {
 		return -1;
 	}
 
+    public static int linearSearch(float[] data, int begin, int end, float value)
+    {
+        for (int i = begin; i < end; ++i)
+        {
+            if (data[i] == value)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
 	public static final int linearSearch(int data[], int begin, int end, int value)
 	{
 		for (; begin < end; ++begin)
@@ -294,6 +307,7 @@ public class ArrayUtil {
     public static float[]   ensureLength(float[]  data, int size)   {return data.length >= size ? data : Arrays.copyOf(data, size);}
     public static double[]  ensureLength(double[] data, int size)   {return data.length >= size ? data : Arrays.copyOf(data, size);}
     public static byte[]    ensureLength(byte[]   data, int size)   {return data.length >= size ? data : Arrays.copyOf(data, size);}
+    public static int[]     ensureLength(int[]    data, int size)   {return data.length >= size ? data : Arrays.copyOf(data, size);}
     public static long[]    ensureLength(long[]   data, int size)   {return data.length >= size ? data : Arrays.copyOf(data, size);}
 
 	public static int max(int[] imageColorArray, int begin, int end) {
@@ -655,7 +669,7 @@ public class ArrayUtil {
 		for (int i = 0; i < data.length; ++i){data[i] = i;}
 	}
 
-    public static double qdist(DoubleList l0, int begin0, DoubleList l1, int begin1, int size) {
+    public static double qdist(PrimitiveList l0, int begin0, PrimitiveList l1, int begin1, int size) {
         double result = 0;
         while (size != 0)
         {
@@ -723,6 +737,18 @@ public class ArrayUtil {
     }
 
     public static final int removeIf(byte[] data, int begin, int end, Predicate<? super Byte> predicate) {
+        int write = 0;
+        for (; begin < end; ++begin)
+        {
+            if (!predicate.test(data[begin]))
+            {
+                data[write++] = data[begin];
+            }
+        }
+        return write;
+    }
+
+    public static final int removeIf(float[] data, int begin, int end, Predicate<? super Float> predicate) {
         int write = 0;
         for (; begin < end; ++begin)
         {

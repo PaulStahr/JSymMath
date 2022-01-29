@@ -162,7 +162,7 @@ public final class Vector2f implements Vectorf
     public final int size(){return 2;}
 
     @Override
-    public double getD(int index)
+    public float getF(int index)
     {
     	switch (index)
     	{

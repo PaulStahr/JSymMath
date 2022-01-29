@@ -43,4 +43,10 @@ public interface Matrixd<T> extends DoubleList, Cloneable{
     public void dotr(T rhs);
 
 	public Matrixd<T> clone();
+
+    @Override
+    default boolean addTuple(double xp, double yp, double zp) {throw new UnsupportedOperationException();}
+
+    @Override
+    default void setSize(int l) {throw new UnsupportedOperationException();}
 }

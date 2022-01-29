@@ -273,7 +273,7 @@ public final class Vector3f implements Vectorf
     }
 
     @Override
-    public double getD(int index)
+    public float getF(int index)
     {
     	switch (index)
     	{

@@ -24,6 +24,8 @@ package util.data;
 import java.util.AbstractList;
 import java.util.Arrays;
 
+import util.ArrayUtil;
+
 public class SortedIntegerArrayList extends AbstractList<Integer> implements SortedIntegerList{
 	public static final	SortedIntegerArrayList EMPTY_SORTED_INTEGER_ARRAY_LIST_ARRAY[] = new SortedIntegerArrayList[0];
     public static final ReadOnlySortedIntegerArrayList EMPTY_LIST = new SortedIntegerArrayList().readOnly();
@@ -92,6 +94,14 @@ public class SortedIntegerArrayList extends AbstractList<Integer> implements Sor
 		--length;
 		return true;
 	}
+
+    @Override
+    public int[] toArray(int[] data, int offset, long from, long to) {
+        if (to > length) {throw new IndexOutOfBoundsException();}
+        data = ArrayUtil.ensureLength(data, (int)(to - from + offset));
+        System.arraycopy(this.data, (int)from, data, offset, (int)(to - from));
+        return data;
+    }
 
 	@Override
 	public void clear(){length = 0;}
@@ -217,5 +227,9 @@ public class SortedIntegerArrayList extends AbstractList<Integer> implements Sor
 
         @Override
         public boolean add(int e0) {throw new UnsupportedOperationException();}
+
+        @Override
+        public int[] toArray(int[] data, int offset, long from, long to) {return SortedIntegerArrayList.this.toArray(data, offset, from, to);}
 	}
+
 }

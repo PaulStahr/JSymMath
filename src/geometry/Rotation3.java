@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,12 +23,12 @@ package geometry;
 
 import util.data.DoubleList;
 
-/** 
+/**
 * @author  Paul Stahr
 * @version 04.02.2012
 */
 
-public final class Rotation3 implements Vectorf, Vectori, Vectord
+public final class Rotation3 implements Vectori, Vectord
 {
 	public static final float MULT_INT_TO_DEG = -(float)(180./Integer.MIN_VALUE);
 	public static final float MULT_INT_TO_RAD = -(float)(Math.PI/Integer.MIN_VALUE);
@@ -96,15 +96,15 @@ public final class Rotation3 implements Vectorf, Vectori, Vectord
     public final void addXInt(final int x){
     	this.x += x;
     }
-    
+
     public final void addYInt(final int y){
     	this.y += y;
     }
-    
+
     public final void addZInt(final int z){
     	this.z += z;
     }
-    
+
     public final void setDegreesX (final float x){
     	this.x = (int)(long)(MULT_DEG_TO_INT*x);
     }
@@ -128,26 +128,26 @@ public final class Rotation3 implements Vectorf, Vectori, Vectord
     	this.y = (int)(long)(MULT_RAD_TO_INT*y);
     	this.z = (int)(long)(MULT_RAD_TO_INT*z);
     }
-    
+
     public final void setRadians(DoubleList data, int index)
     {
     	this.x = (int)(long)(MULT_RAD_TO_INT * data.getD(index));
     	this.y = (int)(long)(MULT_RAD_TO_INT * data.getD(index + 1));
     	this.z = (int)(long)(MULT_RAD_TO_INT * data.getD(index + 2));
     }
-    
+
     public final void set(final Rotation3 r){
         x = r.x;
         y = r.y;
         z = r.z;
     }
-    
+
     @Override
 	public final String toString()
     {
-    	return toString(new StringBuilder()).toString();    	
+    	return toString(new StringBuilder()).toString();
     }
-    
+
     public final StringBuilder toString(StringBuilder strB){
     	return strB.append('(').append(getXRadians())
     			   .append(',').append(getYRadians())
@@ -204,7 +204,7 @@ public final class Rotation3 implements Vectorf, Vectori, Vectord
 		default: throw new ArrayIndexOutOfBoundsException(index);
 		}
 	}
-	
+
 
 	@Override
 	public double getD(int index) {
@@ -216,7 +216,7 @@ public final class Rotation3 implements Vectorf, Vectori, Vectord
 		default: throw new ArrayIndexOutOfBoundsException(index);
 		}
 	}
-	
+
 	@Override
 	public final boolean equals(Object other)
 	{

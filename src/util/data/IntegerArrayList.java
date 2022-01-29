@@ -124,7 +124,7 @@ public class IntegerArrayList extends AbstractList<Integer> implements IntegerLi
 		length += end;
 	}
 
-	public void add(int value0, int value1, int value2)
+	public void addTuple(int value0, int value1, int value2)
 	{
 	    enlargeTo(length + 3);
 		data[length++] = value0;
@@ -171,6 +171,14 @@ public class IntegerArrayList extends AbstractList<Integer> implements IntegerLi
 
 	public int[] toArrayI() {return Arrays.copyOf(data, length);}
 
+    @Override
+    public int[] toArray(int[] data, int offset, long from, long to) {
+        if (to > length) {throw new IndexOutOfBoundsException();}
+        data = ArrayUtil.ensureLength(data, (int)(to - from + offset));
+        System.arraycopy(this.data, (int)from, data, offset, (int)(to - from));
+        return data;
+    }
+
 	@Override
 	public void clear(){length = 0;}
 
@@ -209,6 +217,9 @@ public class IntegerArrayList extends AbstractList<Integer> implements IntegerLi
 		public int indexOf(int value){return ArrayUtil.linearSearch(data, 0, length, value);}
 
 		public int[] toArrayI() {return Arrays.copyOf(data, length);}
+
+        @Override
+        public int[] toArray(int[] data, int offset, long from, long to) {return IntegerArrayList.this.toArray(data, offset, from, to);}
 	}
 
 	public void write(int[] out, int begin) {System.arraycopy(data, 0, out, begin, size());}
@@ -236,5 +247,10 @@ public class IntegerArrayList extends AbstractList<Integer> implements IntegerLi
     public void removeRange(int begin, int end) {
         System.arraycopy(data, end, data, begin, length - end);
         length = end;
+    }
+
+    public void setSize(int l) {
+        if (data.length < l){data = Arrays.copyOf(data, l);}
+        length = l;
     }
 }

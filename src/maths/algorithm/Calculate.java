@@ -1026,6 +1026,12 @@ public abstract class Calculate
 			}
 			System.out.println(min);
 		}
+
+
+	    @Override
+	    public boolean addTuple(double xp, double yp, double zp) {
+	        throw new UnsupportedOperationException();
+	    }
 	}
 
 	/**

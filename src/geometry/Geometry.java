@@ -28,9 +28,9 @@ import java.util.Arrays;
 import maths.algorithm.Calculate;
 import util.ArrayUtil;
 import util.StringUtils;
-import util.data.DoubleArrayList;
 import util.data.DoubleList;
 import util.data.IntegerArrayList;
+import util.data.PrimitiveList;
 
 public class Geometry {
 	public static final class NearestPointCalculator
@@ -185,7 +185,7 @@ public class Geometry {
 		}
 	}
 
-	public static final void volumeToMesh(int[] data, int width, int height, int depth, double mid, IntegerArrayList faceIndices, DoubleArrayList vertexPositions)
+	public static final void volumeToMesh(int[] data, int width, int height, int depth, double mid, IntegerArrayList faceIndices, PrimitiveList vertexPositions)
 	{
 		int offsets[] = new int[8];
 		int vertexIndices[] = new int[width * height * 2 * 3];
@@ -286,43 +286,36 @@ public class Geometry {
 	                                    double yp = y + ((lowerIndex >> 1) & 1);
 	                                    double zp = z + ((lowerIndex >> 2) & 1);
                                         int addIndex = vertexPositions.size() + inOutAxis;
-										vertexPositions.add(xp, yp, zp);
-										vertexPositions.set(addIndex, vertexPositions.getD(addIndex) + alpha);
+										vertexPositions.addTuple(xp, yp, zp);
+										vertexPositions.setElem(addIndex, vertexPositions.getD(addIndex) + alpha);
 									}
 								}
-								if (facePoint0 != -1)
+								if (facePoint0 == -1)
 								{
-									if (facePoint2 != facePoint1 && facePoint0 != facePoint1 && facePoint0 != facePoint2)
-									{
-										faceIndices.add(facePoint0, facePoint1, facePoint2);
-									}
+                                    facePoint0 = facePoint1;
 								}
-								else
-								{
-									facePoint0 = facePoint1;
-								}
+								else if (facePoint2 != facePoint1 && facePoint0 != facePoint1 && facePoint0 != facePoint2)
+                                {
+                                    faceIndices.addTuple(facePoint0, facePoint1, facePoint2);
+                                }
 								facePoint1 = facePoint2;
 
 								final int newAxis = (((innerVertex ^ (innerVertex >> 1) ^ (innerVertex >> 2)) & 1) + inOutAxis + 1)%3;
 								final int newInner = innerVertex ^ (1 << newAxis);
 								final int newOuter = outerVertex ^ (1 << newAxis);
-							    if (insideConnected[newInner] && !insideConnected[newOuter])
-                                {
-                                    innerVertex = newInner;//move on both vertices
-                                }
-                                else if (!insideConnected[newInner])
-                                {
-                                    inOutAxis = newAxis;//move on outer vertex
-                                }
-                                else if (insideConnected[newOuter])
-                                {
-                                    innerVertex = newOuter;//move on inner vertex
-                                    inOutAxis = newAxis;
-                                }
-                                else
-                                {
-                                    throw new RuntimeException("");
-                                }
+	                            if (!insideConnected[newInner])
+	                            {
+	                                inOutAxis = newAxis;//move on outer vertex
+	                            }
+	                            else if (!insideConnected[newOuter])
+	                            {
+	                                innerVertex = newInner;//move on both vertices
+	                            }
+	                            else
+	                            {
+	                                innerVertex = newOuter;//move on inner vertex
+	                                inOutAxis = newAxis;
+	                            }
                                 if (innerVertex == startInnerVertex && inOutAxis == startInOutAxis)
                                 {
                                     break;
@@ -335,6 +328,118 @@ public class Geometry {
 		}
 	}
 
+	private static final int getParent(int data[], int key)
+	{
+	    while (data[key] != key)
+	    {
+	        key = data[key];
+	    }
+	    return key;
+	}
+
+	private static final void assignParent(int data[], int key, int parent)
+    {
+        while (data[key] != key)
+        {
+            int next = data[key];
+            data[key] = parent;
+            key = next;
+        }
+        data[key] = parent;
+    }
+
+	public static final void collapseShortEdges(PrimitiveList vertexPositions, IntegerArrayList faceIndices, double minDist)
+    {
+        int vertexTree[] = new int[vertexPositions.size() / 3];
+        ArrayUtil.iota(vertexTree);
+        int p[] = new int[3];
+        int vIndex[] = new int[3];
+        for (int f = 0; f < faceIndices.size(); f += 3)
+        {
+            faceIndices.toArray(vIndex, 0, f, f + 3);
+            p[0] = getParent(vertexTree, vIndex[0]); p[1] = getParent(vertexTree, vIndex[1]); p[2] = getParent(vertexTree, vIndex[2]);
+            for (int i = 0; i < 3; ++i)
+            {
+                int j = (i + 1) % 3;
+                if (p[i] != p[j])
+                {
+                    double x0 = vertexPositions.getD(vIndex[i] * 3), y0 = vertexPositions.getD(vIndex[i] * 3 + 1), z0 = vertexPositions.getD(vIndex[i] * 3 + 2);
+                    double x1 = vertexPositions.getD(vIndex[j] * 3), y1 = vertexPositions.getD(vIndex[j] * 3 + 1), z1 = vertexPositions.getD(vIndex[j] * 3 + 2);
+                    //Difference Vectors
+                    double xu = x1 - x0, yu = y1 - y0, zu = z1 - z0;
+                    if (xu * xu + yu * yu + zu * zu < minDist)
+                    {
+                        if (p[i] < p[j]){assignParent(vertexTree, vIndex[j], p[i]);p[j] = p[i];}
+                        else            {assignParent(vertexTree, vIndex[i], p[j]);p[i] = p[j];}
+                    }
+                }
+            }
+        }
+        int count[] = new int[vertexTree.length];
+        int oldToNewVertex[] = new int[vertexTree.length];
+        int vCount = 0;
+        for (int v = 0; v< vertexTree.length; ++v)
+        {
+            int parent = getParent(vertexTree, v);
+            if (parent == v)
+            {
+                oldToNewVertex[parent] = vCount;
+                for (int i = 0; i < 3; ++i)
+                {
+                    vertexPositions.setElem(vCount * 3 + i, vertexPositions.getD(parent * 3 + i));
+                }
+                ++vCount;
+            }
+            else
+            {
+                for (int i = 0; i < 3; ++i)
+                {
+                    vertexPositions.setElem(oldToNewVertex[parent] * 3 + i, vertexPositions.getD(oldToNewVertex[parent] * 3 + i) + vertexPositions.getD(v * 3 + i));
+                }
+            }
+            ++count[oldToNewVertex[parent]];
+        }
+        vertexPositions.setSize(vCount * 3);
+        for (int v = 0; v< vCount; ++v)
+        {
+            if (count[v] > 1)
+            {
+                for (int i = 0; i < 3; ++i)
+                {
+                    vertexPositions.setElem(v * 3 + i, vertexPositions.getD(v * 3 + i) / count[v]);
+                }
+            }
+        }
+        int fCount = 0;
+        for (int f = 0; f < faceIndices.size(); f += 3)
+        {
+            faceIndices.toArray(vIndex, 0, f, f + 3);
+            p[0] = getParent(vertexTree, vIndex[0]); p[1] = getParent(vertexTree, vIndex[1]); p[2] = getParent(vertexTree, vIndex[2]);
+            if (p[0] != p[1] && p[1] != p[2] && p[2] != p[0])
+            {
+                for (int i = 0; i < 3; ++i)
+                {
+                    faceIndices.setElem(fCount * 3 + i, oldToNewVertex[p[i]]);
+                }
+                ++fCount;
+            }
+        }
+        faceIndices.setSize(fCount * 3);
+    }
+
+	public static void checkMesh(PrimitiveList vertices, IntegerArrayList faces)
+	{
+        if (vertices.size() % 3 != 0) {throw new RuntimeException("Number of vertices must be multiple of 3");}
+        if (faces.size() % 3 != 0) {throw new RuntimeException("Number of faces must be multiple of 3");}
+        int numVertices = vertices.size() / 3;
+	    for(int f = 0; f < faces.size(); f += 3)
+	    {
+	        int v0 = faces.getI(f), v1 = faces.getI(f + 1), v2 = faces.getI(f + 2);
+	        if (v0 == v1 || v1 == v2 || v2 == v0) {throw new RuntimeException("Degenerated face found");}
+	        if (v0 >= numVertices || v0 < 0 || v1 >= numVertices || v1 < 0 || v2 >= numVertices || v2 < 0) {throw new RuntimeException("Vertex index (" + v0 + ' ' + v1 + ' ' + v2  + ") out of bounds 0 to " + numVertices);}
+	    }
+	}
+
 	private static final void volumeToMeshSlice(
 	        int height,
 	        int width,
@@ -342,7 +447,7 @@ public class Geometry {
 	        int offsets[],
             IntegerArrayList searchStack,
             int vertexIndices[],
-            DoubleArrayList vertexPositions,
+            PrimitiveList vertexPositions,
             IntegerArrayList faceIndices,
 	        boolean inside[],
 	        boolean insideConnected[],
@@ -411,12 +516,12 @@ public class Geometry {
                                 final double v0 = dataValues[index + offsets[lowerVertex]], v1 = dataValues[index + offsets[higherVertex]];
                                 final double alpha = (v0 - mid) / (v0 - v1);
                                 if (alpha < 0 || alpha > 1){throw new RuntimeException("alpha not in range: " + alpha);}
-                                /*if (alpha <= 0.00001) //clip near to lattice values to remove small triangles
+                                /*if (alpha <= slack) //clip near to lattice values to remove small triangles
                                 {
                                     vIndex = (cubeIndex + offsets[lowerVertex]) * 4;
                                     facePoint2 = vertexIndices[vIndex];
                                 }
-                                if (alpha >= 0.99999) //clip near to lattice values to remove small triangles
+                                if (alpha >= 1 - slack) //clip near to lattice values to remove small triangles
                                 {
                                     vIndex = (cubeIndex + offsets[higherVertex]) * 4;
                                     facePoint2 = vertexIndices[vIndex];
@@ -428,41 +533,34 @@ public class Geometry {
                                     double yp = y + ((lowerVertex >> 1) & 1);
                                     double zp = z + ((lowerVertex >> 2) & 1);
                                     int addIndex = vertexPositions.size() + inOutAxis;
-                                    vertexPositions.add(xp, yp, zp);
-                                    vertexPositions.set(addIndex, vertexPositions.getD(addIndex) + alpha);
+                                    vertexPositions.addTuple(xp, yp, zp);
+                                    vertexPositions.setElem(addIndex, vertexPositions.getD(addIndex) + alpha);
                                 }
                             }
-                            if (facePoint0 != -1)
-                            {
-                                if (facePoint2 != facePoint1 && facePoint0 != facePoint1 && facePoint0 != facePoint2)
-                                {
-                                   faceIndices.add(facePoint0, facePoint1, facePoint2);
-                                }
-                            }
-                            else
+                            if (facePoint0 == -1)
                             {
                                 facePoint0 = facePoint1;
+                            }
+                            else if (facePoint2 != facePoint1 && facePoint0 != facePoint1 && facePoint0 != facePoint2)
+                            {
+                               faceIndices.addTuple(facePoint0, facePoint1, facePoint2);
                             }
                             facePoint1 = facePoint2;
                             final int newAxis = (((innerVertex ^ (innerVertex >> 1) ^ (innerVertex >> 2)) & 1) + inOutAxis + 1)%3;
                             final int newInner = innerVertex ^ (1 << newAxis);
                             final int newOuter = outerVertex ^ (1 << newAxis);
-                            if (insideConnected[newInner] && !insideConnected[newOuter])
-                            {
-                                innerVertex = newInner;//move on both vertices
-                            }
-                            else if (!insideConnected[newInner])
+                            if (!insideConnected[newInner])
                             {
                                 inOutAxis = newAxis;//move on outer vertex
                             }
-                            else if (insideConnected[newOuter])
+                            else if (!insideConnected[newOuter])
                             {
-                                innerVertex = newOuter;//move on inner vertex
-                                inOutAxis = newAxis;
+                                innerVertex = newInner;//move on both vertices
                             }
                             else
                             {
-                                throw new RuntimeException("");
+                                innerVertex = newOuter;//move on inner vertex
+                                inOutAxis = newAxis;
                             }
                             if (innerVertex == startInnerVertex && inOutAxis == startInOutAxis)
                             {
@@ -475,31 +573,31 @@ public class Geometry {
         }
 	}
 
-	   public static final void volumeToMesh(float[] data, int width, int height, int depth, double mid, IntegerArrayList faceIndices, DoubleArrayList vertexPositions)
-	    {
-	        int offsets[] = new int[8];
-	        int vertexIndices[] = new int[width * height * 2 * 3];
-	        Arrays.fill(vertexIndices, -1);
-	        boolean inside[] = new boolean[8];
-	        boolean visited[] = new boolean[8];
-	        boolean insideConnected[] = new boolean[8];
-	        for (int i = 0; i < 3; ++i)
-	        {
-	            for (int j = 0; j < (1 << i); ++j)
-	            {
-	                offsets[j + (1 << i)] = offsets[j] + (i == 0 ? 1 : i == 1 ? width : width * height);
-	            }
-	        }
-	        IntegerArrayList searchStack = new IntegerArrayList();
-	        for (int z = 0; z < depth - 1; ++z)
-	        {
-	            System.arraycopy(vertexIndices, width * height * 3, vertexIndices, 0, width * height * 3);
-	            Arrays.fill(vertexIndices, width * height * 3, width * height * 6, -1);
-	            volumeToMeshSlice(height, width, z, offsets, searchStack, vertexIndices, vertexPositions, faceIndices, inside, insideConnected, visited, data, width * height * z, mid);
-	        }
-	    }
+	public static final void volumeToMesh(float[] data, int width, int height, int depth, double mid, IntegerArrayList faceIndices, PrimitiveList vertexPositions)
+    {
+        int offsets[] = new int[8];
+        int vertexIndices[] = new int[width * height * 2 * 3];
+        Arrays.fill(vertexIndices, -1);
+        boolean inside[] = new boolean[8];
+        boolean visited[] = new boolean[8];
+        boolean insideConnected[] = new boolean[8];
+        for (int i = 0; i < 3; ++i)
+        {
+            for (int j = 0; j < (1 << i); ++j)
+            {
+                offsets[j + (1 << i)] = offsets[j] + (i == 0 ? 1 : i == 1 ? width : width * height);
+            }
+        }
+        IntegerArrayList searchStack = new IntegerArrayList();
+        for (int z = 0; z < depth - 1; ++z)
+        {
+            System.arraycopy(vertexIndices, width * height * 3, vertexIndices, 0, width * height * 3);
+            Arrays.fill(vertexIndices, width * height * 3, width * height * 6, -1);
+            volumeToMeshSlice(height, width, z, offsets, searchStack, vertexIndices, vertexPositions, faceIndices, inside, insideConnected, visited, data, width * height * z, mid);
+        }
+    }
 
-	public static final void volumeToMesh(DoubleList data, int width, int height, int depth, double mid, IntegerArrayList faceIndices, DoubleArrayList vertexPositions)
+	public static final void volumeToMesh(DoubleList data, int width, int height, int depth, double mid, IntegerArrayList faceIndices, PrimitiveList vertexPositions)
     {
         int offsets[] = new int[8];
         int vertexIndices[] = new int[width * height * 6];
@@ -530,6 +628,33 @@ public class Geometry {
             volumeToMeshSlice(height, width, z, offsets, searchStack, vertexIndices, vertexPositions, faceIndices, inside, insideConnected, visited, dataValues, 0, mid);
         }
     }
+
+	/*public void intersectPlaneAndMesh(Vector3d normal, double offset, IntegerArrayList faceIndices, DoubleArrayList vertexPositions, DoubleArrayList intersections)
+	{
+	    Vector3d v0 = new Vector3d(), v1 = new Vector3d(), v2 = new Vector3d();
+	    Vector3d vertices[] = new Vector3d[] {v0,v1,v2};
+	    double dot[] = new double[3];
+	    Vector3d tmp = new Vector3d();
+	    for (int f = 0; f < faceIndices.size(); f += 3)
+	    {
+	        for (int v = 0; v < 3; ++v)
+	        {
+	            vertices[v].set(vertexPositions, faceIndices.get(f + v) * 3);
+	            dot[v] = normal.dot(vertices[v]);
+	        }
+            for (int v = 0; v < vertices.length; ++v)
+            {
+    	        if (dot[v] < offset && dot[(v + 1) % 3] >= offset)
+    	        {
+    	            tmp.set(vertices[v]);
+    	            tmp.add(normal, )
+    	            tmp.add(vertices[v]);
+    	            intersections.add();
+    	        }
+            }
+	    }
+	}*/
+
 	public static final void parse(String str, Vectorf vec) throws ParseException
 	{
 		if (str.charAt(0) != '(' || str.charAt(str.length() - 1) != ')')

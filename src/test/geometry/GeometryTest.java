@@ -128,6 +128,35 @@ public class GeometryTest {
         public void volumeToMesh(float data[], int width, int height, int depth, double mid, IntegerArrayList faceIndices, DoubleArrayList vertexPositions);
     }
 
+    @Test
+    public void testCollapseSmallEdges() {
+        DoubleArrayList dal = new DoubleArrayList();
+        IntegerArrayList ial = new IntegerArrayList();
+        dal.addTuple(0, 1, 0);
+        dal.addTuple(0, 0, -0.1);
+        dal.addTuple(0, 0, 0.1);
+        dal.addTuple(1, 0, 0);
+        ial.addTuple(1,2,3);
+        ial.addTuple(0,1,3);
+        Geometry.collapseShortEdges(dal, ial, 0.3);
+        DoubleArrayList expectedVertices = new DoubleArrayList();
+        expectedVertices.addTuple(0, 1, 0);
+        expectedVertices.addTuple(0, 0, 0);
+        expectedVertices.addTuple(1, 0, 0);
+        assertEquals(expectedVertices.size(), dal.size());
+        assertEquals(dal.size(), 9);
+        Vector3d v0 = new Vector3d(), v1 = new Vector3d();
+        for (int v = 0; v < expectedVertices.size(); v += 3)
+        {
+            v0.set(dal, v);
+            v1.set(expectedVertices, v);
+            assertEquals("Expected " + v1 + " got " + v0, 0, v0.distanceQ(v1), 0.01);
+        }
+        assertEquals(ial.getI(0), 0);
+        assertEquals(ial.getI(1), 1);
+        assertEquals(ial.getI(2), 2);
+    }
+
     @RunWith(Parameterized.class)
     public static class NearestPointCalculatorTest {
         VolumeToMeshAdapter meshAdapter;
@@ -173,14 +202,26 @@ public class GeometryTest {
             meshAdapter.volumeToMesh(data, width, height, depth, 0, faceIndices, vertexPositions);
             Vector3d v = new Vector3d();
             float expectedDist = 10f/4;
+            double eps = 0.05;
             for (int i = 0; i < vertexPositions.size(); i += 3)
             {
                 v.set(vertexPositions, i);
                 float smoothed = Interpolator.interpolatePoint(v.x, v.y, v.z, data, width, height, depth);
                 assertEquals(smoothed, 0, 0.05);
                 double dist = Math.sqrt(v.distanceQ(4.5, 4.5, 4.5));
-                assertEquals(dist, expectedDist, 0.05);
-           }
+                assertEquals(dist, expectedDist, eps);
+            }
+            Geometry.checkMesh(vertexPositions, faceIndices);
+            Geometry.collapseShortEdges(vertexPositions, faceIndices, eps * 0.1);
+            Geometry.checkMesh(vertexPositions, faceIndices);
+            for (int i = 0; i < vertexPositions.size(); i += 3)
+            {
+                v.set(vertexPositions, i);
+                float smoothed = Interpolator.interpolatePoint(v.x, v.y, v.z, data, width, height, depth);
+                assertEquals(smoothed, 0, 0.05);
+                double dist = Math.sqrt(v.distanceQ(4.5, 4.5, 4.5));
+                assertEquals(dist, expectedDist, eps);
+            }
         }
 
         @Test
