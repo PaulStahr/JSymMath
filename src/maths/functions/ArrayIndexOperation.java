@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,7 +31,7 @@ import maths.data.MapOperation;
 import maths.exception.ArrayIndexOutOfBoundsExceptionOperation;
 import maths.variable.VariableAmount;
 
-/** 
+/**
 * @author  Paul Stahr
 * @version 04.02.2012
 */
@@ -60,12 +60,14 @@ public final class ArrayIndexOperation extends Operation
     	}
         return new ArrayIndexOperation(a,b);
     }
-    
-    
+
+
 	@Override
 	public final Operation calculate (VariableAmount object, CalculationController control){
         Operation b = index.calculate(object, control), array = this.array;
-        if (b.isIntegral()){
+        if (array instanceof MapOperation && b.isPrimitive()){
+            return ((MapOperation)array).get(b);
+        }else if (b.isIntegral()){
          	long index = b.longValue();
         	if (index < 0)
         		return new ArrayIndexOutOfBoundsExceptionOperation(index);
@@ -78,9 +80,8 @@ public final class ArrayIndexOperation extends Operation
                 return index >= array.size() ? new ArrayIndexOutOfBoundsExceptionOperation(index) : array.get((int)index);
             if (array.isString())
                 return index >= array.stringValue().length() ? new ArrayIndexOutOfBoundsExceptionOperation(index) : CharacterOperation.getInstance(array.stringValue().charAt((int)index));
-        }else if (array instanceof MapOperation && b.isPrimitive()){
-        	return ((MapOperation)array).get(b);
-        }else
+        }
+        else
         {
         	array = array.calculate(object, control);
         }
@@ -93,7 +94,7 @@ public final class ArrayIndexOperation extends Operation
 	@Override
 	public final int size() {return 2;}
 
-	
+
 	@Override
 	public final Operation get(int index) {
 		switch (index){
@@ -102,7 +103,7 @@ public final class ArrayIndexOperation extends Operation
 			default:throw new ArrayIndexOutOfBoundsException(index);
 		}
 	}
-    
+
 	@Override
 	public final StringBuilder toString (Print type, StringBuilder stringBuilder){
 		return index.toString(type, array.toString(type, stringBuilder).append('[')).append(']');

@@ -12,9 +12,14 @@ public class MapOperation extends MengenOperation{
 
 	public final Operation get(Operation op)
 	{
-		return operations.get(op);
+		Operation tmp = operations.get(op);
+		if (tmp == null)
+		{
+		    return RealDoubleOperation.NaN;
+		}
+		return tmp;
 	}
-	
+
 	@Override
 	public int isElementOf(Operation element) {
 		return 0;

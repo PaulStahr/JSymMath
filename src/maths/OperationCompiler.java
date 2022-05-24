@@ -30,8 +30,10 @@ import maths.data.BooleanOperation;
 import maths.data.CharacterOperation;
 import maths.data.Characters;
 import maths.data.ComplexLongOperation;
+import maths.data.MapOperation;
 import maths.data.RealDoubleOperation;
 import maths.data.RealLongOperation;
+import maths.data.RelationOperation;
 import maths.data.StringOperation;
 import maths.exception.OperationParseException;
 import maths.functions.AbsoluteOperation;
@@ -76,8 +78,8 @@ import maths.functions.RandomMatrixOperation;
 import maths.functions.RealPartOperation;
 import maths.functions.RoundOperation;
 import maths.functions.RowReducedEchelonFormOperation;
-import maths.functions.SignOperation;
 import maths.functions.ScalarProductOpertion;
+import maths.functions.SignOperation;
 import maths.functions.SleepOperation;
 import maths.functions.SolveOperation;
 import maths.functions.SortOperation;
@@ -130,9 +132,9 @@ import maths.functions.io.RequestOperation;
 import maths.functions.io.RequestTimeoutOperation;
 import maths.functions.io.WriteCsvOperation;
 import maths.functions.io.WriteOperation;
+import maths.functions.variable.AssignOperation;
 import maths.functions.variable.DefineOperation;
 import maths.functions.variable.DeleteOperation;
-import maths.functions.variable.AssignOperation;
 import maths.variable.UserVariableOperation;
 import maths.variable.Variable;
 import util.StringUtils;
@@ -151,7 +153,7 @@ public final class OperationCompiler
 
 	static{
 	    final char characters[][] = {{Characters.END_COMMAND},
-				{Characters.SET},
+				{Characters.SET, Characters.DEFINE},
 				{Characters.AND, Characters.OR},
 				{Characters.EQ,Characters.NOT_EQ, Characters.ELEM_OF, Characters.SUBSET},
 				{Characters.LOW_EQ, Characters.HIGH_EQ, Characters.LOW,Characters.HIGH},
@@ -601,10 +603,27 @@ public final class OperationCompiler
 		        	}
 		            MathematicStringUtil.split(str, begin + 1, end - 1, ',', ial);
 		            final Operation operations[] = new Operation[ial.size() + 1];
+		            boolean relation = false;
+		            boolean allrelation = true;
 		            for (int i=0;i<operations.length;i++) {
 		            	int i0 = i == 0 ? begin+1 : ial.getI(i - 1) + 1;
 		            	int i1 = i == ial.size() ? end - 1 : ial.getI(i);
 		                operations[i] = compileRek(str, i0, i1, opt);
+		                boolean tmp = operations[i] instanceof RelationOperation;
+		                relation |= tmp;
+		                allrelation &= tmp;
+		            }
+		            if (relation && !allrelation)
+		            {
+		                throw new OperationParseException(str);
+		            }
+		            if (allrelation) {
+		                MapOperation mo = new MapOperation();
+		                for (int i = 0; i < operations.length; ++i)
+	                    {
+		                    mo.set(operations[i].get(0), operations[i].get(1));
+	                    }
+		                return mo;
 		            }
 		            return ArrayOperation.getInstance(operations);
 		        }
@@ -639,6 +658,7 @@ public final class OperationCompiler
             case Characters.ELEM_OF 	:return new IsElementOfOperation(a,b);
             case Characters.NOT_ELEM_OF	:return new IsNotElementOfOperation(a,b);
             case Characters.AND   		:return new AndOperation(a,b);
+            case Characters.DEFINE      :return new RelationOperation(a,b);
             case Characters.OR  		:return new OrOperation(a,b);
             case Characters.SET   		:return new AssignOperation(a, b);
             case Characters.ADD     	:return new AdditionOperation(a,b);

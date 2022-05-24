@@ -1,16 +1,16 @@
 /*******************************************************************************
  * Copyright (c) 2019 Paul Stahr
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,7 +22,7 @@
 package maths.data;
 
 
-/** 
+/**
 * @author  Paul Stahr
 * @version 04.02.2012
 */
@@ -44,6 +44,7 @@ public abstract class Characters {
 	public static final char EQ			='=';
 	public static final char NOT_EQ		='\u2260';
 	public static final char POW		='^';
+	public static final char DEFINE     =':';
 	public static final char AND		='\u02C4';
 	public static final char OR			='\u02C5';
 	public static final char NOT		='\u00AC';
@@ -78,14 +79,14 @@ public abstract class Characters {
 	public static final char HIGH_SUB	='\u207B';
 	public static final char HIGH_PLUS  ='\u207A';
 	public static final char FIBUNACCI	='\u2131';
-	
+
 	public static final String STR_INFTY	= String.valueOf(INFTY);
 	public static final String STR_NEG_INFTY= String.valueOf(new char[]{SUB,INFTY});
 	public static final String STR_EULER	= String.valueOf(EULER);
 	public static final String STR_PI		= String.valueOf(PI);
-	
+
 	private static final char HIGH_ARRAY[] = {HIGH_ZERO, HIGH_ONE, HIGH_TWO, HIGH_THREE, HIGH_FOUR, HIGH_FIVE, HIGH_SIX, HIGH_SEVEN, HIGH_EIGHT, HIGH_NINE};
-	
+
 	public static final int digit(char c, int radix)
 	{
 		for (int i = 0; i < radix; ++i)
@@ -97,7 +98,7 @@ public abstract class Characters {
 		}
 		return -1;
 	}
-	
+
 	public static final String toHighString(final String number){
 		final char erg[] = new char[number.length()];
 		for (int i=0;i<erg.length;i++){
@@ -111,7 +112,7 @@ public abstract class Characters {
 		}
 		return new String (erg);
 	}
-	
+
 	public static final char[] toLowString(final String number, int begin, int end){
 		final char erg[] = new char[end - begin];
 		for (int i=0;i<erg.length;i++){
@@ -127,7 +128,7 @@ public abstract class Characters {
 		}
 		return erg;
 	}
-	
+
 	public static final boolean isHighNumber(final char c){
 		for (int i=0;i<HIGH_ARRAY.length;i++)
 			if (HIGH_ARRAY[i]==c)
