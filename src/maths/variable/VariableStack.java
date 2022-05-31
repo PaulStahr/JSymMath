@@ -343,6 +343,10 @@ public class VariableStack implements VariableAmount, Iterable<Variable>, Variab
     }
 
     public final Variable get(int index){
+        if (index > variable.length)
+        {
+            return ((VariableStack)parent).get(index - variable.length);
+        }
     	return variable[index];
     }
 

@@ -29,6 +29,8 @@ import maths.algorithm.OperationCalculate;
 import maths.data.CharacterOperation;
 import maths.data.MapOperation;
 import maths.exception.ArrayIndexOutOfBoundsExceptionOperation;
+import maths.variable.UserVariableOperation;
+import maths.variable.UserVariableOperationInserted;
 import maths.variable.VariableAmount;
 
 /**
@@ -46,6 +48,9 @@ public final class ArrayIndexOperation extends Operation
     }
 
     public static final Operation calculate(Operation a, Operation b){
+        if (a instanceof MapOperation && b.isPrimitive()) {
+            return ((MapOperation)a).get(b);
+        }
     	if (b.isIntegral()){
 	     	long index = b.longValue();
 	    	if (index < 0)
@@ -55,9 +60,6 @@ public final class ArrayIndexOperation extends Operation
 	        if (a.isString())
 	            return index >= a.stringValue().length() ? new ArrayIndexOutOfBoundsExceptionOperation(index) : CharacterOperation.getInstance(a.stringValue().charAt((int)index));
     	}
-    	if (a instanceof MapOperation && b.isPrimitive()) {
-    		return ((MapOperation)a).get(b);
-    	}
         return new ArrayIndexOperation(a,b);
     }
 
@@ -65,8 +67,12 @@ public final class ArrayIndexOperation extends Operation
 	@Override
 	public final Operation calculate (VariableAmount object, CalculationController control){
         Operation b = index.calculate(object, control), array = this.array;
+        if (array instanceof UserVariableOperation || array instanceof UserVariableOperationInserted)
+        {
+            array = array.calculate(object, control);
+        }
         if (array instanceof MapOperation && b.isPrimitive()){
-            return ((MapOperation)array).get(b);
+            return ((MapOperation)array).get(b).calculate(object, control);
         }else if (b.isIntegral()){
          	long index = b.longValue();
         	if (index < 0)

@@ -74,14 +74,14 @@ public abstract class Operation
     public double doubleValue()		{return Double.NaN;}
     public double doubleValueImag()	{return Double.NaN;}
 
-    public long longNumeratorValue()		{throw new RuntimeException(getClass() + " has no numerator (Full operation: " +toString()+ ")");}
-    public long longDenumeratorValue()		{throw new RuntimeException(getClass() + " has no denumerator (Full operation: " +toString()+ ")");}
-    public long longNumeratorValueImag()	{throw new RuntimeException(getClass() + " has no numerator (Full operation: " +toString()+ ")");}
-    public long longDenumeratorValueImag()	{throw new RuntimeException(getClass() + " has no denumerator (Full operation: " +toString()+ ")");}
-    public long longValue()					{throw new RuntimeException(getClass() + " can't be interpreted as long (Full operation: " +toString()+ ")");}
-    public long longValueImag()				{throw new RuntimeException(getClass() + " can't be interpreted as imagenary long (Full operation: " +toString()+ ")");}
-    public boolean booleanValue()			{throw new RuntimeException(getClass() + " can't be interpreted as boolean (Full operation: " +toString()+ ")");}
-    public String stringValue()				{throw new RuntimeException(getClass() + " can't be interpreted as string (Full operation: " +toString()+ ")");}
+    public long longNumeratorValue()		{throw new RuntimeException(getClass() + " has no numerator (Full operation: " +toString()+ ')');}
+    public long longDenumeratorValue()		{throw new RuntimeException(getClass() + " has no denumerator (Full operation: " +toString()+ ')');}
+    public long longNumeratorValueImag()	{throw new RuntimeException(getClass() + " has no numerator (Full operation: " +toString()+ ')');}
+    public long longDenumeratorValueImag()	{throw new RuntimeException(getClass() + " has no denumerator (Full operation: " +toString()+ ')');}
+    public long longValue()					{throw new RuntimeException(getClass() + " can't be interpreted as long (Full operation: " +toString()+ ')');}
+    public long longValueImag()				{throw new RuntimeException(getClass() + " can't be interpreted as imagenary long (Full operation: " +toString()+ ')');}
+    public boolean booleanValue()			{throw new RuntimeException(getClass() + " can't be interpreted as boolean (Full operation: " +toString()+ ')');}
+    public String stringValue()				{throw new RuntimeException(getClass() + " can't be interpreted as string (Full operation: " +toString()+ ')');}
 
     public abstract Operation getInstance(List<Operation> subclasses);
 

@@ -217,13 +217,13 @@ public final class Variable implements Comparable<Variable>{
 
 
 	public boolean set(Operation index, Operation o) {
-		if (value instanceof ArrayOperation && o.isIntegral())
+		if (value instanceof ArrayOperation && index.isIntegral())
 		{
 			value = ((ArrayOperation)value).set((int)index.longValue(), o);
 			valueChanged();
 			return true;
 		}
-		if (value instanceof MapOperation && o.isPrimitive())
+		if (value instanceof MapOperation && index.isPrimitive())
 		{
 			value = ((MapOperation)value).set(index, o);
 			valueChanged();
