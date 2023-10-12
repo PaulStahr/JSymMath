@@ -37,6 +37,7 @@ public class Geometry {
 	{
 		final int dim;
 		final double mat[];
+		final double average[];
 		int nCols;
 		int count;
 		public NearestPointCalculator(int dim)
@@ -44,12 +45,23 @@ public class Geometry {
 			this.dim = dim;
 			this.nCols = dim + 1;
 			this.mat = new double[dim * nCols];
+			this.average = new double[dim];
 		}
 
 		public final void reset()
 		{
 			Arrays.fill(mat, 0);
+			Arrays.fill(average, 0);
 			count = 0;
+		}
+
+		public double[] getAverage(double res[])
+		{
+		    for (int i = 0; i < count; ++i)
+		    {
+		        res[i] = average[i] / count;
+		    }
+		    return res;
 		}
 
         public final void addRay(DoubleList positions, DoubleList directions, int idx)
@@ -61,7 +73,9 @@ public class Geometry {
                 int index = idx + j;
                 double dir = directions.getD(index);
                 dirlen += dir * dir;
-                scalar += dir * positions.getD(index);
+                double p = positions.getD(index);
+                average[j] += p;
+                scalar += dir * p;
             }
             scalar *= (dirlen = 1 / dirlen);
             for (int j = 0; j < dim; ++j)
@@ -87,7 +101,9 @@ public class Geometry {
 				int index = idx + j;
 				float dir = directions[index];
 				dirlen += dir * dir;
-				scalar += dir * positions[index];
+                double p = positions[index];
+                average[j] += p;
+				scalar += dir * p;
 			}
 			scalar *= (dirlen = 1 / dirlen);
 			for (int j = 0; j < dim; ++j)
@@ -168,6 +184,10 @@ public class Geometry {
 				res[i] = (float)mat[i * nCols + dim];
 			}
 		}
+
+        public final double getAverage(int i) {
+            return average[i] / count;
+        }
 	}
 
 	public static final void parse(String str, Vectord vec) throws ParseException

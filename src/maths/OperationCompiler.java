@@ -633,7 +633,7 @@ public final class OperationCompiler
 	                return new UserVariableOperation (str, begin, end);
 	    	}
 	    }
-        throw new OperationParseException(str);
+        throw new OperationParseException(str.substring(begin, end));
     }
 
     private static final Operation get(char character, String operand0, int begin0, int end0, String operand1, int begin1, int end1, CompileOptions opt) throws OperationParseException{

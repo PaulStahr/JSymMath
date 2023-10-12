@@ -37,7 +37,16 @@ public abstract class Operation
 		CALGRAPH, LATEX, OPEN_OFFICE;
 	}
 
-	public static final short BITMASK_INT_REAL = 0x1, BITMASK_RATIONAL_REAL = 0x2, BITMASK_FLOAT_REAL = 0x4, BITMASK_INT_COMPLEX = 0x8, BITMASK_RATIONAL_COMPLEX = 0x10, BITMASK_FLOAT_COMPLEX = 0x20, BITMASK_BOOLEAN = 0x40, BITMASK_CHARACTER = 0x80, BITMASK_STRING = 0x100;
+	public static final short
+	    BITMASK_INT_REAL           = 0x1,
+	    BITMASK_RATIONAL_REAL      = 0x2,
+	    BITMASK_FLOAT_REAL         = 0x4,
+	    BITMASK_INT_COMPLEX        = 0x8,
+	    BITMASK_RATIONAL_COMPLEX   = 0x10,
+	    BITMASK_FLOAT_COMPLEX      = 0x20,
+	    BITMASK_BOOLEAN            = 0x40,
+	    BITMASK_CHARACTER          = 0x80,
+	    BITMASK_STRING             = 0x100;
 
 	public int getTypeBitmask(){
 		return 0;
