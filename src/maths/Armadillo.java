@@ -1,10 +1,20 @@
 package maths;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
 
+import io.StreamUtil;
 import util.Buffers;
 import util.data.DoubleArrayList;
 import util.data.IntegerArrayList;
@@ -35,9 +45,15 @@ public class Armadillo {
 	}
 
 
+	public static enum Backend{
+	    ARMADILLO, CUPY
+	}
+
+
+
 	public static native void spsolve(DoubleBuffer A, IntBuffer IA, IntBuffer JA, DoubleBuffer b, DoubleBuffer result);
 
-	public static double[] solveDiffusionEquation(int width, int height, int depth, double equalityOperationResult[], boolean isGiven[])
+	public static double[] solveDiffusionEquation(int width, int height, int depth, double equalityOperationResult[], boolean isGiven[], Backend backend)
 	{
 		int size = width * height * depth;
 		int notGivenIndices[] = new int[size];
@@ -46,10 +62,10 @@ public class Armadillo {
 		{
 			notGivenIndices[i] = isGiven[i] ? -1 : notGivenCount++;
 		}
-		return solveDiffusionEquation(width, height, depth, equalityOperationResult, notGivenIndices, notGivenCount);
+		return solveDiffusionEquation(width, height, depth, equalityOperationResult, notGivenIndices, notGivenCount, backend);
 	}
 
-	public static double[] solveDiffusionEquation(int width, int height, int depth, double equalityOperationResult[], int notGivenIndices[], int notGivenCount)
+	public static double[] solveDiffusionEquation(int width, int height, int depth, double equalityOperationResult[], int notGivenIndices[], int notGivenCount, Backend backend)
 	{
 		DoubleBuffer b = Buffers.createDoubleBuffer(notGivenCount);
 		DoubleArrayList matValues = new DoubleArrayList();
@@ -101,23 +117,111 @@ public class Armadillo {
 				}
 			}
 		}
-		DoubleBuffer db = Buffers.createDoubleBuffer(matValues.size());
-		matValues.fill(db);
-		IntBuffer ib = Buffers.createIntBuffer(colIndices.size());
-		colIndices.fill(ib);
-		DoubleBuffer result = Buffers.createDoubleBuffer(notGivenCount);
+
 		//logger.debug(new StringBuilder().append(matValues.size()).append(' ').append(colIndices.size()).append(' ').append(rowElements.capacity()).toString());
 		//logger.debug(new StringBuilder().append(db.capacity()).append(' ').append(ib.capacity()).append(' ').append(rowElements.capacity()).toString());
 		//logger.debug("num rows:" + b.capacity() + " num cols:" + result.capacity());
-		Armadillo.spsolve(db, rowElements, ib, b, result);
-		for (int i = 0; i < notGivenIndices.length; ++i)
-		{
-			final int index = notGivenIndices[i];
-			if (index != -1)
-			{
-				equalityOperationResult[i] = result.get(index);
-			}
+		try{
+		    System.out.println("spsolve");
+		    if (backend == Backend.ARMADILLO)
+		    {
+		        DoubleBuffer db = Buffers.createDoubleBuffer(matValues.size());
+		        matValues.fill(db);
+		        IntBuffer ib = Buffers.createIntBuffer(colIndices.size());
+		        colIndices.fill(ib);
+		        DoubleBuffer result = Buffers.createDoubleBuffer(notGivenCount);
+		        Armadillo.spsolve(db, rowElements, ib, b, result);
+		        for (int i = 0; i < notGivenIndices.length; ++i)
+		        {
+		            final int index = notGivenIndices[i];
+		            if (index != -1)
+		            {
+		                equalityOperationResult[i] = result.get(index);
+		            }
+		        }
+		    }
+		    else if (backend == Backend.CUPY)
+		    {
+		        String path = new String("src/python/spsolve.py");
+		        InputStream stream;
+	            if (new File(path).exists())
+	            {
+	                stream = new FileInputStream(path);
+	            }
+	            else
+	            {
+	                stream = JniInterface.getResourceAsStream(path);
+	            }
+	            String python_script = StreamUtil.readStreamToString(stream);
+	            ProcessBuilder processBuilder = new ProcessBuilder("python3", "-c", python_script);
+	            processBuilder.redirectErrorStream(true);
+
+	            Process process = processBuilder.start();
+
+	            OutputStream oStream = process.getOutputStream();
+	            OutputStreamWriter out = new OutputStreamWriter(oStream);
+	            BufferedWriter outBuf = new BufferedWriter(out);
+
+                outBuf.write(String.valueOf(matValues.size()));
+                outBuf.newLine();
+	            for (int i = 0;i < matValues.size(); ++i)
+	            {
+	                outBuf.write(String.valueOf(matValues.getD(i)));
+	                outBuf.newLine();
+	            }
+                outBuf.write(String.valueOf(colIndices.size()));
+                outBuf.newLine();
+                for (int i = 0;i < matValues.size(); ++i)
+                {
+                    outBuf.write(String.valueOf(colIndices.getI(i)));
+                    outBuf.newLine();
+                }
+                outBuf.write(String.valueOf(rowElements.limit()));
+                outBuf.newLine();
+                for (int i = 0;i < rowElements.limit(); ++i)
+                {
+                    outBuf.write(String.valueOf(rowElements.get(i)));
+                    outBuf.newLine();
+                }
+                outBuf.write(String.valueOf(b.limit()));
+                outBuf.newLine();
+                for (int i = 0;i < b.limit(); ++i)
+                {
+                    outBuf.write(String.valueOf(b.get(i)));
+                    outBuf.newLine();
+                }
+                outBuf.close();
+                out.close();
+                oStream.close();
+
+	            InputStream iStream = process.getInputStream();
+                InputStreamReader iRead = new InputStreamReader(iStream);
+                BufferedReader reader = new BufferedReader(iRead);
+	            for (int i = 0; i < notGivenIndices.length; ++i)
+	            {
+	                final int index = notGivenIndices[i];
+                    if (index != -1)
+                    {
+                        String line = reader.readLine();
+    	                equalityOperationResult[i] = Double.parseDouble(line);
+                    }
+	            }
+	            reader.close();
+	            iRead.close();
+	            iStream.close();
+
+	            int exitCode = process.waitFor();
+	            assertEquals("No errors should be detected", 0, exitCode);
+		    }
+		    else {
+		        throw new RuntimeException("Backend not known");
+		    }
+            System.out.println("successful");
+		}catch(Exception e) {
+		    e.printStackTrace();
+		    throw new RuntimeException(e);
 		}
+
 		return equalityOperationResult;
 	}
 }

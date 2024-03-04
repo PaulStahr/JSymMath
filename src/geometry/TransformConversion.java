@@ -3,9 +3,6 @@ package geometry;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
-import geometry.Matrix3x2d;
-import geometry.Vector2d;
-
 public class TransformConversion {
     public static void copy(AffineTransform in, Matrix3x2d out){out.set(in.getScaleX(), in.getShearX(), in.getTranslateX(), in.getShearY(), in.getScaleY(), in.getTranslateY());}
 
