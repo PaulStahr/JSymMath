@@ -150,7 +150,7 @@ public class Armadillo {
 	            }
 	            else
 	            {
-	                stream = JniInterface.getResourceAsStream(path);
+	                stream = JniInterface.class.getResourceAsStream(path);
 	            }
 	            String python_script = StreamUtil.readStreamToString(stream);
 	            ProcessBuilder processBuilder = new ProcessBuilder("python3", "-c", python_script);
