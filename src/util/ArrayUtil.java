@@ -310,14 +310,23 @@ public class ArrayUtil {
     public static int[]     ensureLength(int[]    data, int size)   {return data.length >= size ? data : Arrays.copyOf(data, size);}
     public static long[]    ensureLength(long[]   data, int size)   {return data.length >= size ? data : Arrays.copyOf(data, size);}
 
-	public static int max(int[] imageColorArray, int begin, int end) {
-		int max = Integer.MIN_VALUE;
-		for (;begin != end; ++begin)
-		{
-			max = Math.max(max, imageColorArray[begin]);
-		}
-		return max;
-	}
+    public static int max(int[] imageColorArray, int begin, int end) {
+        int max = Integer.MIN_VALUE;
+        for (;begin != end; ++begin)
+        {
+            max = Math.max(max, imageColorArray[begin]);
+        }
+        return max;
+    }
+
+    public static long max(long[] imageColorArray, int begin, int end) {
+        long max = Long.MIN_VALUE;
+        for (;begin != end; ++begin)
+        {
+            max = Math.max(max, imageColorArray[begin]);
+        }
+        return max;
+    }
 
 
     public static final float max(float[] imageColorArray, int begin, int end) {
@@ -378,6 +387,15 @@ public class ArrayUtil {
         }
     }
 
+
+
+    public static void divide(long[] data, int begin, int end, long div) {
+        for (; begin < end; ++begin)
+        {
+            data[begin] /= div;
+        }
+    }
+
 	public static final void divide(int[] in, int begin, int end, int[] out, int outBegin, int div)
 	{
 		for (; begin < end; ++begin, ++outBegin)
@@ -386,23 +404,37 @@ public class ArrayUtil {
 		}
 	}
 
-	public static void normalizeTo(int[] imageColorArray, int begin, int end, int to) {
-		int max = max(imageColorArray, begin, end);
-		if (max == 0)
-		{
-			return;
-		}
-		double mult = (double)to / max;
-		for (;begin < end; ++begin)
-		{
-			imageColorArray[begin] = (int)(imageColorArray[begin] * mult) ;
-		}
-		/*long mult = ((long)to * (long)Integer.MAX_VALUE) / max;
-		for (; begin != end; ++begin)
-		{
-			imageColorArray[begin] = (int)(((long)imageColorArray[begin] * mult) >> 31) ;
-		}*/
-	}
+    public static final void divide(long[] in, int begin, int end, long[] out, int outBegin, long div)
+    {
+        for (; begin < end; ++begin, ++outBegin)
+        {
+            out[outBegin] = in[begin] / div;
+        }
+    }
+
+    public static void normalizeTo(int[] imageColorArray, int begin, int end, int to) {
+        int max = max(imageColorArray, begin, end);
+        if (max == 0)
+        {
+            return;
+        }
+        for (;begin < end; ++begin)
+        {
+            imageColorArray[begin] = (int)((long)imageColorArray[begin] * to / max);
+        }
+    }
+
+    public static void normalizeTo(long[] imageColorArray, int begin, int end, int to) {
+        long max = max(imageColorArray, begin, end);
+        if (max == 0)
+        {
+            return;
+        }
+        for (;begin < end; ++begin)
+        {
+            imageColorArray[begin] = (int)(imageColorArray[begin] * to / max);
+        }
+    }
 
 	/*
 	 * Normalizes the array in a way, that the highest value is equal to to
@@ -633,12 +665,19 @@ public class ArrayUtil {
 		}
 	}
 
-	public static void arraycopy(float[] input, int inputBegin, int[] output, int outputBegin, int size) {
-		for (size += inputBegin; inputBegin < size; ++inputBegin, ++outputBegin)
-		{
-			output[outputBegin] = (int)input[inputBegin];
-		}
-	}
+    public static void arraycopy(float[] input, int inputBegin, int[] output, int outputBegin, int size) {
+        for (size += inputBegin; inputBegin < size; ++inputBegin, ++outputBegin)
+        {
+            output[outputBegin] = (int)input[inputBegin];
+        }
+    }
+
+    public static void arraycopy(long[] input, int inputBegin, int[] output, int outputBegin, int size) {
+        for (size += inputBegin; inputBegin < size; ++inputBegin, ++outputBegin)
+        {
+            output[outputBegin] = (int)input[inputBegin];
+        }
+    }
 
 	public static void setLementsAt(byte[] output, int[] inputIndices, byte[] inputValues) {
 		for (int i = 0; i < inputIndices.length; ++i)
