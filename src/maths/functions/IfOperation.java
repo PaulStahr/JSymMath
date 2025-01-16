@@ -45,6 +45,8 @@ public final class IfOperation extends FunctionOperation
     public static final Operation calculate (Operation a, Operation b, Operation c){
         if (a.isBoolean())
             return a.booleanValue() ? b : c;
+        if (a.isRealIntegerNumber())
+            return a.isZero() ? c : b;
         Operation erg = OperationCalculate.standardCalculations(a);
         if (erg != null)
             return erg;
@@ -56,9 +58,11 @@ public final class IfOperation extends FunctionOperation
         final Operation a = this.a.calculate(object, control);
         if (a.isBoolean())
             return (a.booleanValue() ? b : c).calculate(object, control);
-        Operation erg = OperationCalculate.standardCalculations(a);
-        if (erg != null)
-            return erg;
+        if (a.isRealIntegerNumber())
+            return (a.isZero() ? c : b).calculate(object, control);
+        Operation res = OperationCalculate.standardCalculations(a);
+        if (res != null)
+            return res;
         return new IfOperation (a, b.calculate(object, control), c.calculate(object, control));
     }
 

@@ -86,6 +86,7 @@ import maths.functions.SortOperation;
 import maths.functions.SumOfArrayOperation;
 import maths.functions.TaylorPolynomOperation;
 import maths.functions.TransposeOperation;
+import maths.functions.TypeOperation;
 import maths.functions.UnequalsOperation;
 import maths.functions.WhileOperation;
 import maths.functions.atomic.AdditionOperation;
@@ -528,6 +529,7 @@ public final class OperationCompiler
 		                        case "tan":    	return new TangensOperation(a);
 		                        case "tanh":   	return new TangensHyperbolicOperation(a);
 		                        case "transpose":return new TransposeOperation(a);
+		                        case "type":    return new TypeOperation(a);
 		                	}
 		                    break;
 		                } case 2:{
