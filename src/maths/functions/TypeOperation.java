@@ -100,12 +100,6 @@ public final class TypeOperation extends FunctionOperation
 		}
 	}
 
-
-	@Override
-	public final StringBuilder toString(Print type, StringBuilder stringBuilder){
-        return a.toString(type, stringBuilder).append('!');
-    }
-
 	@Override
 	public Operation getInstance(List<Operation> subclasses) {
 		return new DeterminantenOperation(subclasses.get(0));

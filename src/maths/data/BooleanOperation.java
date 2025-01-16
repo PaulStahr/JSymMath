@@ -67,6 +67,11 @@ public final class BooleanOperation extends Operation
         return value;
     }
 
+	@Override
+	public final long longValue() {
+	    return value ? 1 : 0;
+	}
+
 
 	@Override
 	public final BooleanOperation calculate (VariableAmount object, CalculationController control){
