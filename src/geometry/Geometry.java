@@ -37,53 +37,80 @@ public class Geometry {
 	{
 		final int dim;
 		final double mat[];
-		final double average[];
+		final double averagePos[];
+		final double averageDir[];
 		int nCols;
 		int count;
+
 		public NearestPointCalculator(int dim)
 		{
 			this.dim = dim;
 			this.nCols = dim + 1;
 			this.mat = new double[dim * nCols];
-			this.average = new double[dim];
+			this.averagePos = new double[dim];
+			this.averageDir = new double[dim];
 		}
 
 		public final void reset()
 		{
 			Arrays.fill(mat, 0);
-			Arrays.fill(average, 0);
+			Arrays.fill(averagePos, 0);
+			Arrays.fill(averageDir, 0);
 			count = 0;
 		}
 
-		public double[] getAverage(double res[])
+		public double[] getAveragePos(double res[])
 		{
-		    for (int i = 0; i < count; ++i)
+		    for (int i = 0; i < dim; ++i)
 		    {
-		        res[i] = average[i] / count;
+		        res[i] = averagePos[i] / count;
 		    }
 		    return res;
 		}
 
+		public double[] getAverageDir(double res[])
+		{
+		    for (int i = 0; i < dim; ++i)
+		    {
+		        res[i] = averageDir[i] / count;
+		    }
+		    return res;
+		}
+
+        /**
+         Measures on a scale from 0 to one how uniform the directions are distributed
+         1 means that all directions are the same and the crossing point is not well defined
+         */
+		public double getUniformness() {
+		    double res = averageDir[0] * averageDir[0];
+		    for (int i = 1; i < dim; ++i)
+            {
+                res += averageDir[i] * averageDir[i];
+            }
+            return res / (count * count);
+		}
+
         public final void addRay(DoubleList positions, DoubleList directions, int idx)
         {
-            float dirlen = 0;
-            float scalar = 0;
+            double dirlen = 0;
+            double scalar = 0;
             for (int j = 0; j < dim; ++j)
             {
                 int index = idx + j;
                 double dir = directions.getD(index);
                 dirlen += dir * dir;
                 double p = positions.getD(index);
-                average[j] += p;
+                averagePos[j] += p;
                 scalar += dir * p;
             }
-            scalar *= (dirlen = 1 / dirlen);
+            dirlen = 1 / dirlen;
             for (int j = 0; j < dim; ++j)
             {
                 int index = idx + j;
                 double dir = directions.getD(index) * dirlen;
+                averageDir[j] += dir;
                 int jc = j * nCols;
-                mat[jc + dim] += scalar * directions.getD(index) - positions.getD(index);
+                mat[jc + dim] += scalar * dir - positions.getD(index);
                 for (int k = 0; k <= j; ++k)
                 {
                     mat[jc + k] += dir * directions.getD(idx + k);
@@ -94,24 +121,25 @@ public class Geometry {
 
 		public final void addRay(float positions[], float directions[], int idx)
 		{
-			float dirlen = 0;
-			float scalar = 0;
+			double dirlen = 0;
+			double scalar = 0;
 			for (int j = 0; j < dim; ++j)
 			{
 				int index = idx + j;
 				float dir = directions[index];
 				dirlen += dir * dir;
                 double p = positions[index];
-                average[j] += p;
+                averagePos[j] += p;
 				scalar += dir * p;
 			}
-			scalar *= (dirlen = 1 / dirlen);
+			dirlen = 1 / dirlen;
 			for (int j = 0; j < dim; ++j)
 			{
 				int index = idx + j;
-				float dir = directions[index] * dirlen;
+				double dir = directions[index] * dirlen;
+				averageDir[j] += dir;
 				int jc = j * nCols;
-				mat[jc + dim] += scalar * directions[index] - positions[index];
+				mat[jc + dim] += scalar * dir - positions[index];
 				for (int k = 0; k <= j; ++k)
 				{
 					mat[jc + k] += dir * directions[idx + k];
@@ -142,18 +170,23 @@ public class Geometry {
 		    return strB.toString();
 		}
 
-		public final int calculate()
+		public final int calculate(double eps)
 		{
 		    prepareMatrix(mat);
-			int res = Calculate.toRREF(mat, dim);
-			for (int i = 0; i < dim; ++i)
-		    {
-			    if (Math.abs(mat[i * nCols + i] - 1) > 0.01)
-			    {
-			        return i;
-			    }
-		    }
-			return res;
+	        int res = Calculate.toRREF(mat, dim);
+	        for (int i = 0; i < dim; ++i)
+	        {
+	            if (Math.abs(mat[i * nCols + i] - 1) > eps)
+	            {
+	                return i;
+	            }
+	        }
+	        return res;
+		}
+
+		public final int calculate()
+		{
+		    return calculate(0.01);
 		}
 
 		private void prepareMatrix(double[] mat) {
@@ -185,8 +218,12 @@ public class Geometry {
 			}
 		}
 
-        public final double getAverage(int i) {
-            return average[i] / count;
+        public final double getAveragePos(int i) {
+            return averagePos[i] / count;
+        }
+
+        public final double getAverageDir(int i) {
+            return averageDir[i] / count;
         }
 	}
 

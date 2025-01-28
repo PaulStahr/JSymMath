@@ -268,6 +268,7 @@ public final class Vector3d implements Vectord
     public final Vector3d add(final Vector3d v){x += v.x;y += v.y;z += v.z;return this;}
     public final void add(final Vector3d v, double s){x += v.x * s;y += v.y * s;z += v.z * s;}
 
+    @Override
     public double[] toArrayD() {return new double[] {x,y,z};}
     public float[] toArrayF() {return new float[] {(float)x,(float)y,(float)z};}
 
@@ -362,4 +363,7 @@ public final class Vector3d implements Vectord
 		double diffx = position.x - midpoint.x, diffy = position.y - midpoint.y, diffz = position.z = midpoint.z;
 		return Math.acos(dot(diffx, diffy, diffz)/Math.sqrt((diffx * diffx + diffy * diffy + diffz * diffz)*dot()));
 	}
+    public double dot(DoubleList dl, int i) {
+        return this.x * dl.getD(i) + this.y * dl.getD(i + 1) + this.z * dl.getD(i + 2);
+    }
 }

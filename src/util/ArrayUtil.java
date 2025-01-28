@@ -309,6 +309,7 @@ public class ArrayUtil {
     public static byte[]    ensureLength(byte[]   data, int size)   {return data.length >= size ? data : Arrays.copyOf(data, size);}
     public static int[]     ensureLength(int[]    data, int size)   {return data.length >= size ? data : Arrays.copyOf(data, size);}
     public static long[]    ensureLength(long[]   data, int size)   {return data.length >= size ? data : Arrays.copyOf(data, size);}
+    public static <T> T[]   ensureLength(T[]      data, int size)   {return data.length >= size ? data : Arrays.copyOf(data, size);}
 
     public static int max(int[] imageColorArray, int begin, int end) {
         int max = Integer.MIN_VALUE;
