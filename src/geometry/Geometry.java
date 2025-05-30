@@ -1303,7 +1303,39 @@ public class Geometry {
     	return result;
     }
 
+
     public static final void getOrthorgonalZMatrix(Vector3d in, Matrixd<?> out) {
+    	double dirlength = Math.sqrt(in.dot());
+    	double qx = in.x * in.x;
+		double qy = in.y * in.y;
+		double qz = in.z * in.z;
+
+		double n0x, n0y, n0z;
+
+		if (qx >= qy && qx >= qz)       {n0x =-in.z; n0y = 0;    n0z = in.x;}
+        else if (qy >= qx && qy >= qz)  {n0x = in.y; n0y =-in.x; n0z = 0;}
+        else                            {n0x = 0;    n0y = in.z; n0z =-in.y;}
+
+		double mult = dirlength / Math.sqrt(n0x * n0x + n0y * n0y + n0z * n0z);
+		n0x *= mult; n0y *= mult; n0z *= mult;
+		double n1x = in.y * n0z - in.z * n0y;
+    	double n1y = in.z * n0x - in.x * n0z;
+    	double n1z = in.x * n0y - in.y * n0x;
+    	mult = dirlength / Math.sqrt(n1x * n1x + n1y * n1y + n1z * n1z);
+    	n1x *= mult; n1y *= mult; n1z *= mult;
+    	if (out instanceof Matrix3d)
+    	{
+    		((Matrix3d)out).setRowMajor(n0x, n1x, in.x, n0y, n1y, in.y, n0z, n1z, in.z);
+    		//((Matrix3d)out).set(n0x, n0y, n0z, n1x, n1y, n1z, in.x, in.y, in.z);
+    	}
+    	if (out instanceof Matrix4d)
+    	{
+    		((Matrix4d)out).setRowMajor(n0x, n1x, in.x, n0y, n1y, in.y, n0z, n1z, in.z);
+    		//((Matrix4d)out).set(n0x, n0y, n0z, n1x, n1y, n1z, in.x, in.y, in.z);
+    	}
+    }
+
+    public static final void getOrthorgonalZMatrixOld(Vector3d in, Matrixd<?> out) {
     	double dirlength = Math.sqrt(in.dot());
     	double qx = in.x * in.x;
 		double qy = in.y * in.y;
