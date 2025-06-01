@@ -22,5 +22,5 @@ def test_getOrthorgonalZMatrix():
         geometry_package.Geometry.getOrthorgonalZMatrix(jp_in_vec, jp_out_matrix)
 
         jp_result = jp_out_matrix.toArrayD()
-        jp_result = np.swapaxes(np.array(jp_result).reshape((3, 3)), 0,1)
+        jp_result = np.array(jp_result).reshape((3, 3))
         np.testing.assert_allclose(result, jp_result, rtol=1e-8)

@@ -37,4 +37,4 @@ class Geometry:
         n0 = n0 * (dirlength / np.linalg.norm(n0))
         n1 = np.cross(in_vec, n0)
         n1 = n1 * (dirlength / np.linalg.norm(n1))
-        return np.asarray((n0, n1, in_vec))
+        return np.stack((n0, n1, in_vec),axis=-1)
