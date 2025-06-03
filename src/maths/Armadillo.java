@@ -1,7 +1,5 @@
 package maths;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -171,6 +169,10 @@ public class Armadillo {
 	            OutputStreamWriter out = new OutputStreamWriter(oStream);
 	            BufferedWriter outBuf = new BufferedWriter(out);
 
+                InputStream iStream = process.getInputStream();
+                InputStreamReader iRead = new InputStreamReader(iStream);
+                BufferedReader reader = new BufferedReader(iRead);
+
                 outBuf.write(String.valueOf(matValues.size()));
                 outBuf.newLine();
 	            for (int i = 0;i < matValues.size(); ++i)
@@ -199,13 +201,11 @@ public class Armadillo {
                     outBuf.write(String.valueOf(b.get(i)));
                     outBuf.newLine();
                 }
-                outBuf.close();
-                out.close();
-                oStream.close();
 
-	            InputStream iStream = process.getInputStream();
-                InputStreamReader iRead = new InputStreamReader(iStream);
-                BufferedReader reader = new BufferedReader(iRead);
+                outBuf.flush();
+                out.flush();
+                oStream.flush();
+
 	            for (int i = 0; i < notGivenIndices.length; ++i)
 	            {
 	                final int index = notGivenIndices[i];
@@ -215,12 +215,19 @@ public class Armadillo {
     	                equalityOperationResult[i] = Double.parseDouble(line);
                     }
 	            }
-	            reader.close();
+                outBuf.close();
+                out.close();
+                oStream.close();
+
+                reader.close();
 	            iRead.close();
 	            iStream.close();
 
 	            int exitCode = process.waitFor();
-	            assertEquals("No errors should be detected", 0, exitCode);
+	            if (exitCode != 0)
+	            {
+	                System.err.print("Error: Exit code of python spsolve should be 0, got " + exitCode + " instead");
+	            }
 		    }
 		    else {
 		        throw new RuntimeException("Backend not known");
