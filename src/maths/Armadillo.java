@@ -154,6 +154,10 @@ public class Armadillo {
 	                {
 	                    stream = JniInterface.class.getResourceAsStream("python/spsolve.py");
 	                }
+	                if (stream == null)
+                    {
+	                    stream = new FileInputStream("/home/paul/workspace/JSymMath/src/python/spsolve.py");
+                    }
 	            }
 
 
