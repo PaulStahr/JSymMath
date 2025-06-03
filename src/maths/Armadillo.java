@@ -122,7 +122,6 @@ public class Armadillo {
 		//logger.debug(new StringBuilder().append(db.capacity()).append(' ').append(ib.capacity()).append(' ').append(rowElements.capacity()).toString());
 		//logger.debug("num rows:" + b.capacity() + " num cols:" + result.capacity());
 		try{
-		    System.out.println("spsolve");
 		    if (backend == Backend.ARMADILLO)
 		    {
 		        DoubleBuffer db = Buffers.createDoubleBuffer(matValues.size());
@@ -151,7 +150,13 @@ public class Armadillo {
 	            else
 	            {
 	                stream = JniInterface.class.getResourceAsStream(path);
+	                if (stream == null)
+	                {
+	                    stream = JniInterface.class.getResourceAsStream("python/spsolve.py");
+	                }
 	            }
+
+
 	            String python_script = StreamUtil.readStreamToString(stream);
 	            ProcessBuilder processBuilder = new ProcessBuilder("python3", "-c", python_script);
 	            processBuilder.redirectErrorStream(true);

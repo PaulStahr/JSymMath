@@ -36,7 +36,7 @@ test {
 sourceSets.main.java.srcDirs = ['src']
 sourceSets.test.java.srcDirs = ['src/test']
 sourceSets.main.resources.srcDirs= ["src"]
-sourceSets.main.resources.includes = [ "**/*.so" ]
+sourceSets.main.resources.includes = [ "**/*.so" , "**/*.py" ]
 
 jar {
     destinationDir = file('./')
