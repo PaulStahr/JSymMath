@@ -1,9 +1,8 @@
 import jpype
 import sys
 
-#import class geometry/Geometry.class
 from jsymmath.geometry.Geometry import Geometry
-from jpype import JPackage, JArray, JDouble
+from jpype import JPackage
 import numpy as np
 sys.path.append("./bin")
 if not jpype.isJVMStarted():

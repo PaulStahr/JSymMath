@@ -1057,6 +1057,10 @@ public abstract class Calculate
 			{
 				max = arg;
 			}
+			else
+			{
+			    return arg;
+			}
 		}
 		return (min + max) * 0.5;
 	}

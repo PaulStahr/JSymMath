@@ -18,3 +18,4 @@ def convert(img, module):
     if t.__module__ == 'cupy':
         return module.array(img.get(), copy=False)
     return module.array(img, copy=False)
+

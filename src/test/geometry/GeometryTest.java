@@ -46,7 +46,7 @@ public class GeometryTest {
         @Override
         public float eval(float x, float y, float z)
         {
-            return x;
+            return y;
         }
     };
 
@@ -54,7 +54,7 @@ public class GeometryTest {
         @Override
         public float eval(float x, float y, float z)
         {
-            return x;
+            return z;
         }
     };
 
@@ -78,7 +78,7 @@ public class GeometryTest {
         @Override
         public float eval(float x, float y)
         {
-            return x;
+            return y;
         }
     };
 
@@ -158,9 +158,9 @@ public class GeometryTest {
     }
 
     @RunWith(Parameterized.class)
-    public static class NearestPointCalculatorTest {
+    public static class VolumeToMeshTest {
         VolumeToMeshAdapter meshAdapter;
-        public NearestPointCalculatorTest(VolumeToMeshAdapter meshAdapter) {
+        public VolumeToMeshTest(VolumeToMeshAdapter meshAdapter) {
             this.meshAdapter = meshAdapter;
         }
 
