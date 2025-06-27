@@ -124,3 +124,16 @@ class Geometry:
         else: # q[2] >= q[0] and q[2] >= q[1]:
             n0 = np.asarray((0, in_vec[2], -in_vec[1]))
         return n0 * (dirlength / np.linalg.norm(n0))
+
+    @staticmethod
+    def calcTriangleMeshVertexFaceNormals(vertices, faces):
+        face_vertices = vertices[faces]
+        face_normals = np.cross(face_vertices[:, 1] - face_vertices[:, 0], face_vertices[:, 2] - face_vertices[:, 0])
+        face_normals /= np.linalg.norm(face_normals, axis=-1, keepdims=True)
+
+        vertex_normals = np.zeros_like(vertices, dtype=float)
+        for face_index in range(0, len(faces)):
+            vertex_normals[faces[face_index]] += face_normals[face_index]
+
+        vertex_normals /= np.linalg.norm(vertex_normals, axis=-1, keepdims=True)
+        return vertex_normals, face_normals

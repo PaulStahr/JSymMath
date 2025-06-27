@@ -4,9 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 def convert(img, module):
-    if isinstance(img, str):
-        return img
-    if module == None:
+    if img is None or module == None or isinstance(img, str):
         return img
     t = type(img)
     if inspect.getmodule(t) == module:
