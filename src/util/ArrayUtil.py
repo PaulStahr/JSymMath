@@ -17,3 +17,13 @@ def convert(img, module):
         return module.array(img.get(), copy=False)
     return module.array(img, copy=False)
 
+
+def getArrayModule(arr):
+    if arr is None:
+        return None
+    t = type(arr)
+    if t.__module__ == 'numpy':
+        return __import__('numpy')
+    if t.__module__ == 'cupy':
+        return __import__('cupy')
+    return None

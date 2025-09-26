@@ -3,15 +3,18 @@ import inspect
 
 
 class NearestPointCalculator:
-    def __init__(self, position: np.ndarray, direction: np.ndarray):
+    def __init__(self, position: np.ndarray, direction: np.ndarray, tolerance:float=1e-10):
         xp = inspect.getmodule(type(position))
-        self.intersection = NearestPointCalculator.intersect(position, direction)
+        self.intersection = NearestPointCalculator.intersect(position, direction, tolerance=tolerance)
         self.average_pos = xp.mean(position, axis=np.arange(0, position.ndim - 1), keepdims=True)
         self.average_dir = xp.mean(direction, axis=np.arange(0, direction.ndim - 1), keepdims=True)
         self.uniformness = xp.sum(self.average_dir ** 2, axis=-1) / (np.prod(self.average_dir.shape[:-1]) ** 2)
 
     @staticmethod
-    def intersect(bases: np.ndarray, vecs: np.ndarray):
+    def intersect(
+            bases: np.ndarray,
+            vecs: np.ndarray,
+            tolerance:float=1e-10):
         """
         Compute the intersection point of a set of lines in an arbitrary-dimensional space.
 
@@ -49,7 +52,10 @@ class NearestPointCalculator:
 
             M_sum = xp.eye(vecs.shape[1]) * n - xp.einsum('ki,kj->ij', vecs, vecs)  # Shape: (d, d)
             # Check rank
-            if xp.linalg.det(M_sum) < 1e-10:
+            #if xp.linalg.det(M_sum) < 1e-10:
+            #    return xp.full(d, fill_value=xp.nan)
+            eigval = xp.linalg.eigvalsh(M_sum)
+            if eigval[0] < tolerance:
                 return xp.full(d, fill_value=xp.nan)
 
             Mbase_sum = xp.sum(bases, axis=0) - xp.dot(xp.einsum('ij,ij->i', vecs, bases), vecs)  # Shape: (d)
@@ -64,7 +70,10 @@ class NearestPointCalculator:
             identity = xp.eye(vecs.shape[-1])[None, :, :]  # Shape (1, d, d)
             M_sum = valid_counts[:, None] * identity - xp.einsum('mij,mik->mjk', vecs, vecs)
 
-            non_singular_mask = ~(xp.linalg.det(M_sum) < 1e-10)
+            #non_singular_mask = ~(xp.linalg.det(M_sum) < 1e-10)
+
+            eigvals = xp.linalg.eigvalsh(M_sum)  # Shape: (batch, d)
+            non_singular_mask = eigvals[..., 0] > tolerance  # Smallest eigenvalue > threshold
 
             proj = xp.einsum('mij,mij->mi', vecs, bases)[..., None] * vecs
             Mbase_sum = xp.sum(bases - proj, axis=1)
